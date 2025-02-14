@@ -2,6 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <!-- Inclusão de meta viewport para responsividade -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Banco de Questões – Neurologia Vascular (73 Questões)</title>
   <style>
     /* Estilos gerais */
@@ -21,6 +23,16 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    /* Menu dentro do quiz */
+    #menu {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #menu button {
+      padding: 8px 16px;
+      margin: 0 10px;
+      font-size: 14px;
     }
     /* Cartão da questão */
     .question-card {
@@ -66,6 +78,7 @@
     /* Navegação */
     #navigation {
       text-align: center;
+      margin-top: 20px;
     }
     #navigation button {
       padding: 10px 20px;
@@ -91,6 +104,11 @@
   
   <!-- Área do Quiz -->
   <div id="quizContainer" style="display:none;">
+    <!-- Menu com opções adicionais -->
+    <div id="menu">
+      <button id="home">Página Inicial</button>
+      <button id="resetQuestions">Resetar Questões</button>
+    </div>
     <div id="questionArea"></div>
     <div id="navigation">
       <button id="prevQuestion">Anterior</button>
@@ -99,1021 +117,1132 @@
   </div>
   
   <script>
-    /*****************************************************************
-     * Banco de Questões – Array com 73 questões.
-     * Cada objeto possui: id, question, options, correct, comment.
-     *****************************************************************/
-    const questionBank = [
-      {
-        id: 1,
-        question: "1. Um paciente de 65 anos com diabetes apresenta um AIT. De acordo com o escore ABCD2, que avalia o risco de AVC em alguém com AIT, qual das seguintes variáveis <strong>não</strong> é utilizada como preditora de ocorrência de um AVC?",
-        options: [
-          {letter: "a", text: "Diabetes"},
-          {letter: "b", text: "Idade igual ou superior a 60 anos"},
-          {letter: "c", text: "Hipertensão"},
-          {letter: "d", text: "Duração dos sintomas neurológicos"},
-          {letter: "e", text: "Hiperlipidemia"}
-        ],
-        correct: "e",
-        comment: "A hiperlipidemia não faz parte do escore ABCD2. A identificação dos fatores de risco que predizem AVC após AIT é fundamental na avaliação dos pacientes. No escore ABCD2, são atribuídos pontos para: idade (60 anos ou mais – 1 ponto); pressão arterial (≥140/90 mm Hg – 1 ponto); sintomas clínicos (1 ponto para alteração da fala sem fraqueza e 2 pontos para fraqueza focal); duração dos sintomas (1 ponto para 10 a 59 minutos e 2 pontos para 60 minutos ou mais); e diabetes (1 ponto). O risco de AVC em 2 dias varia de 0% (escores 0–1) a 8,1% (escores 6–7). (Easton JD, Saver JL, Albers GW, et al. Stroke. 2009;40:2276–2293.)"
-      },
-      {
-        id: 2,
-        question: "2. Uma mulher de 42 anos com diabetes, hipertensão e hiperlipidemia é trazida ao serviço de emergência por “falta de responsividade”. Uma ressonância magnética (MRI) foi obtida e está mostrada na Figura 2.1. Qual das seguintes manifestações provavelmente será encontrada nessa paciente?",
-        options: [
-          {letter: "a", text: "Comprometimento do olhar vertical"},
-          {letter: "b", text: "Sintomas hemissensoriais"},
-          {letter: "c", text: "Hemiparesia"},
-          {letter: "d", text: "Quadriplegia com prejuízo do desvio horizontal do olhar"},
-          {letter: "e", text: "Afasia"}
-        ],
-        correct: "d",
-        comment: "A RM mostrada na Figura 2.1 demonstra restrição à difusão em DWI envolvendo a ponte e o cerebelo. É provável que essa paciente apresente quadriplegia e comprometimento do desvio horizontal dos olhos – achados consistentes com a síndrome 'locked‑in'. Outras manifestações neurológicas não se enquadram no quadro. O comprometimento do olhar vertical é mais comum em lesões do mesencéfalo. (Ropper AH, Samuels MA, Klein JP. Adams and Victor’s Principles of Neurology, 10ª ed.)"
-      },
-      {
-        id: 3,
-        question: "3. Um homem de 49 anos, com histórico de hipertensão, apresenta início agudo de hemiparesia direita e afasia. A última vez em que foi visto normal foi cerca de 45 minutos antes. O escore NIHSS é 14. Qual das seguintes condutas é a <strong>melhor</strong> próxima etapa?",
-        options: [
-          {letter: "a", text: "Iniciar ativador de plasminogênio tecidual (tPA) intravenoso"},
-          {letter: "b", text: "Solicitar uma tomografia de crânio (TC)"},
-          {letter: "c", text: "Administrar aspirina 325 mg em dose única"},
-          {letter: "d", text: "Iniciar heparina intravenosa"},
-          {letter: "e", text: "Realizar uma ressonância magnética (MRI) de crânio"}
-        ],
-        correct: "b",
-        comment: "Deve ser realizada uma TC de crânio antes de iniciar qualquer terapia. A apresentação clínica é compatível com AVC agudo e, se for isquêmico e sem contraindicações, o tPA IV deve ser administrado, pois o paciente está dentro da janela terapêutica. O NIHSS avalia os déficits neurológicos e a TC é essencial para excluir hemorragia. (Tissue plasminogen activator for acute ischemic stroke. N Engl J Med. 1995;333:1581–1587.)"
-      },
-      {
-        id: 4,
-        question: "4. Uma mulher de 49 anos apresenta hemiplegia de início agudo, progredindo para quadriplegia em 2 horas. Ao exame, está acordada, mas incapaz de verbalizar e com aumento das secreções orais. Ela não consegue mover os olhos horizontalmente, mas movimenta-os verticalmente e pisca. Qual das seguintes é a causa <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Infartos talâmicos bilaterais"},
-          {letter: "b", text: "Infarto lateral de bulbo (medular)"},
-          {letter: "c", text: "Oclusão 'top of the basilar'"},
-          {letter: "d", text: "Infarto que afeta a base da ponte de forma bilateral"},
-          {letter: "e", text: "Infarto que afeta a região dorsal do mesencéfalo"}
-        ],
-        correct: "d",
-        comment: "Este paciente apresenta síndrome 'locked‑in', causada por oclusão basilar que resulta em infartos bilaterais na base da ponte, afetando os tratos longos mas preservando o sistema ativador reticular. Assim, o paciente permanece consciente, com a capacidade de piscar e mover os olhos verticalmente, mas é quadriplégico e não consegue falar, com movimentos oculares horizontais comprometidos. (Ropper AH, Samuels MA, Klein JP. Adams and Victor’s Principles of Neurology, 10ª ed.)"
-      },
-      {
-        id: 5,
-        question: "5. Qual das seguintes afirmações está correta em relação à trombose dos seios venosos?",
-        options: [
-          {letter: "a", text: "Diplopia com paralisia do VI nervo craniano é específica para trombose do seio cavernoso"},
-          {letter: "b", text: "Cefaleia está presente em menos de 50% dos casos"},
-          {letter: "c", text: "Aumento da pressão intracraniana é incomum"},
-          {letter: "d", text: "Trombose do seio sagital superior pode produzir infartos venosos talâmicos bilaterais"},
-          {letter: "e", text: "Crises epilépticas são mais comuns em infartos venosos do que em infartos arteriais"}
-        ],
-        correct: "e",
-        comment: "Crises epilépticas ocorrem em aproximadamente 40% dos pacientes com trombose dos seios venosos – uma taxa muito superior à observada em AVCs arteriais. A cefaleia é o sintoma mais frequente (cerca de 90% dos adultos) e a oclusão venosa pode levar a infarto hemorrágico e aumento da pressão intracraniana. (Ropper AH, Samuels MA, Klein JP. Adams and Victor’s Principles of Neurology, 10ª ed.; Stam J. N Engl J Med. 2005;352:1791–1798.)"
-      },
-      {
-        id: 6,
-        question: "6. Um homem de 51 anos apresenta ataxia. Uma RM foi obtida e está mostrada na Figura 2.2. Qual das seguintes consequências provavelmente resultará dessa lesão?",
-        options: [
-          {letter: "a", text: "Vertigem, nistagmo e ptose e miose à direita"},
-          {letter: "b", text: "Comprometimento do olhar vertical"},
-          {letter: "c", text: "Paralisias do terceiro e sexto nervos cranianos à direita"},
-          {letter: "d", text: "Perda hemisensitiva de dor e temperatura do lado esquerdo da face"},
-          {letter: "e", text: "Perda hemisensitiva de dor e temperatura do lado direito do corpo"}
-        ],
-        correct: "a",
-        comment: "Esta RM demonstra restrição à difusão na medula lateral direita e no cerebelo, manifestando-se como a síndrome de Wallenberg. Um infarto lateral da medula (Wallenberg) é causado pela oclusão da PICA e frequentemente associado à oclusão da artéria vertebral, afetando os núcleos vestibulares, o trato trigeminal descendente, o trato espinotalâmico, fibras simpáticas (resultando na síndrome de Horner ipsilateral) e as conexões cerebelares. (Goetz CG. Textbook of Clinical Neurology, 3ª ed.; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 7,
-        question: "7. Um homem de 34 anos apresenta vertigem e dor cervical após andar em uma montanha-russa “muito radical”. O exame mostra anisocoria com ptose discreta à esquerda, nistagmo, redução de sensibilidade na hemiface esquerda e ataxia à esquerda. Qual o melhor exame diagnóstico para investigar a causa dessa condição?",
-        options: [
-          {letter: "a", text: "Ultrassonografia de carótida"},
-          {letter: "b", text: "Doppler transcraniano"},
-          {letter: "c", text: "Ecocardiograma transtorácico com estudo de bolhas"},
-          {letter: "d", text: "Angiografia por cateter das artérias cérvico-cerebrais"},
-          {letter: "e", text: "Angiorressonância (MRA) 'time-of-flight' do polígono de Willis"}
-        ],
-        correct: "d",
-        comment: "Este paciente provavelmente apresenta dissecção da artéria vertebral esquerda, causando síndrome lateral da medula. O sítio mais comum para dissecção vertebral é entre C1 e C2. Embora exames não invasivos (CTA/MRA) sejam úteis, a angiografia por cateter é o padrão-ouro para avaliar dissecções das artérias cervicais. (CADISS trial; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 8,
-        question: "8. Uma mulher de 69 anos apresenta-se ao serviço de emergência com 2 horas e 35 minutos do início de hemiparesia esquerda e heminegligência. O escore NIHSS é 12. A TC de crânio não mostra hemorragia. Qual das seguintes afirmações está correta sobre o tPA intravenoso?",
-        options: [
-          {letter: "a", text: "O risco de hemorragia com tPA é semelhante ao do placebo"},
-          {letter: "b", text: "Administração mais precoce está associada a melhor prognóstico e menor risco de hemorragia"},
-          {letter: "c", text: "Não existe dose máxima"},
-          {letter: "d", text: "O uso de tPA melhora desfechos clínicos apenas em curto prazo, mas não em longo prazo"},
-          {letter: "e", text: "O tPA não deve ser administrado além de 2 horas do início dos sintomas"}
-        ],
-        correct: "b",
-        comment: "O ativador do plasminogênio tecidual (tPA) é um agente trombolítico utilizado no AVC isquêmico agudo. Sua administração precoce está associada a melhores desfechos e menor risco de hemorragia. (NINDS tPA Stroke Study Group; Hacke W, et al. N Engl J Med. 2008;359:1317–1329.)"
-      },
-      {
-        id: 9,
-        question: "9. Uma mulher de 72 anos, com histórico de diabetes, apresenta um distúrbio visual transitório do lado direito. Ao questioná-la, ela relata ter sentido uma redução transitória da visão do olho direito, progredindo do campo visual superior para o inferior, como se uma 'cortina' estivesse descendo. Isso durou cerca de 10 minutos e se resolveu espontaneamente. Qual das seguintes afirmações é correta?",
-        options: [
-          {letter: "a", text: "Essa paciente tem isquemia transitória do córtex occipital esquerdo"},
-          {letter: "b", text: "Um Doppler transcraniano mostrará velocidades aumentadas na artéria basilar"},
-          {letter: "c", text: "A carótida interna (ICA) direita está estenosada por uma placa aterosclerótica"},
-          {letter: "d", text: "A carótida interna (ICA) esquerda está estenosada por uma placa aterosclerótica"},
-          {letter: "e", text: "O exame de fundoscopia demonstrará papiledema"}
-        ],
-        correct: "c",
-        comment: "Esta paciente apresentou cegueira monocular transitória (amaurose fugaz), geralmente causada por estenose aterosclerótica da ICA do mesmo lado – neste caso, a direita. (Goetz CG; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 10,
-        question: "10. Um homem de 40 anos apresenta tinido, perda auditiva unilateral, náuseas, vômitos e vertigem. Ao exame, observa-se nistagmo, ataxia ipsilateral, síndrome de Horner ipsilateral e déficits sensoriais contralaterais em dor e temperatura no braço, tronco e perna. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "AVC na artéria cerebelar ântero-inferior (AICA)"},
-          {letter: "b", text: "AVC na artéria cerebelar póstero-inferior (PICA)"},
-          {letter: "c", text: "Infarto mesencefálico"},
-          {letter: "d", text: "Infarto do lobo occipital"},
-          {letter: "e", text: "Infarto cerebelar superior"}
-        ],
-        correct: "a",
-        comment: "Este paciente apresenta um infarto na distribuição da AICA. Embora o quadro possa ser semelhante ao infarto por PICA, a surdez ipsilateral (devido à lesão da artéria labiríntica) é característica dos infartos por AICA. (Lee H, et al. Stroke. 2002;33:2807–2812.)"
-      },
-      {
-        id: 11,
-        question: "11. Uma mulher de 59 anos apresenta alteração do estado mental. Observa-se restrição à difusão na RM, mostrada na Figura 2.3. Qual é o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Infarto bilateral da artéria coroidal anterior"},
-          {letter: "b", text: "Infarto por oclusão da artéria recorrente de Heubner"},
-          {letter: "c", text: "Infarto por oclusão da artéria de Percheron"},
-          {letter: "d", text: "Infarto por oclusão da artéria pericallosa"},
-          {letter: "e", text: "Trombose do seio sagital superior"}
-        ],
-        correct: "c",
-        comment: "A Figura 2.3 mostra infarto bilateral do tálamo, que ocorre com a oclusão da artéria de Percheron. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 12,
-        question: "12. Uma mulher de 49 anos com ansiedade, depressão, hipertensão e diabetes apresenta déficit sensitivo afetando face, braço, tronco e perna direitos, iniciado na noite anterior. Os sintomas atingiram o pico pela manhã, antes da avaliação. Não há déficits motores ao exame. Qual das seguintes afirmações é correta?",
-        options: [
-          {letter: "a", text: "Nenhuma investigação adicional é necessária; a paciente pode ser liberada do pronto-socorro"},
-          {letter: "b", text: "Dada a ausência de déficit motor, os sintomas provavelmente estão relacionados à ansiedade"},
-          {letter: "c", text: "A localização mais provável da lesão é cortical"},
-          {letter: "d", text: "A etiologia mais provável é cardioembólica"},
-          {letter: "e", text: "A etiologia mais provável é doença de pequenos vasos"}
-        ],
-        correct: "e",
-        comment: "Esta paciente apresenta sintomas puramente sensitivos, típicos de um AVC lacunar (AVC sensitivo puro) decorrente da oclusão de uma pequena artéria penetrante – frequentemente no tálamo – em razão da hipertensão crônica. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 13,
-        question: "13. Um homem de 52 anos, com histórico de hipertensão, apresenta início agudo de hemiparesia esquerda afetando face, braço e perna. Ele reconhece o lado esquerdo do corpo e seus déficits. Seu olhar não está desviado. Qual a localização mais provável da oclusão vascular?",
-        options: [
-          {letter: "a", text: "Tronco da ACM direita antes da bifurcação"},
-          {letter: "b", text: "Ramos lenticuloestriados da ACM direita"},
-          {letter: "c", text: "Divisão superior da ACM direita"},
-          {letter: "d", text: "Artéria cerebral posterior (ACP) direita"},
-          {letter: "e", text: "Divisão inferior da ACM direita"}
-        ],
-        correct: "b",
-        comment: "Este paciente apresenta um quadro lacunar de déficit motor puro, provavelmente devido a um infarto no compartimento posterior da cápsula interna, originado da oclusão dos ramos lenticuloestriados da MCA. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 14,
-        question: "14. Uma mulher de 59 anos, com histórico de fibrilação atrial e hipertensão, apresenta hemiparesia direita que afeta principalmente face e braço. O olhar está desviado para a esquerda. Ela entende os comandos, mas não consegue verbalizar e demonstra frustração. Onde está a localização <strong>mais provável</strong> da oclusão vascular?",
-        options: [
-          {letter: "a", text: "Tronco da ACM esquerda antes da bifurcação"},
-          {letter: "b", text: "Ramos lenticuloestriados da ACM esquerda"},
-          {letter: "c", text: "Divisão superior da ACM esquerda"},
-          {letter: "d", text: "Divisão inferior da ACM esquerda"},
-          {letter: "e", text: "Ramos penetrantes ao nível da ponte"}
-        ],
-        correct: "c",
-        comment: "Esta paciente provavelmente apresenta infarto na distribuição da divisão superior da MCA esquerda, o que causa hemiparesia contralateral (afetando principalmente face e braço) e afasia de Broca. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 15,
-        question: "15. Um homem de 51 anos com hipertensão e diabetes apresenta fraqueza na perna esquerda associada à incontinência urinária. Sabe-se que esse paciente tem um polígono de Willis normal, confirmado em MRA anterior. Qual é a oclusão vascular mais provável?",
-        options: [
-          {letter: "a", text: "Artéria cerebral anterior (ACA) direita proximal à origem da artéria comunicante anterior"},
-          {letter: "b", text: "ACA direita distal à origem da artéria comunicante anterior"},
-          {letter: "c", text: "Artéria comunicante anterior"},
-          {letter: "d", text: "Divisão superior da ACM direita"},
-          {letter: "e", text: "Divisão inferior da ACM direita"}
-        ],
-        correct: "b",
-        comment: "Este paciente apresenta isquemia no território da ACA direita, e a oclusão distal à artéria comunicante geralmente causa déficits sensitivo-motores contralaterais na perna, acompanhados de incontinência urinária. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 16,
-        question: "16. Qual das seguintes afirmações sobre a artéria recorrente de Heubner está correta?",
-        options: [
-          {letter: "a", text: "É um ramo penetrante da ACA"},
-          {letter: "b", text: "É um ramo penetrante da ACP"},
-          {letter: "c", text: "Irriga bilateralmente o tálamo"},
-          {letter: "d", text: "Irriga o braço posterior da cápsula interna"},
-          {letter: "e", text: "Origina-se do tronco principal da ACM"}
-        ],
-        correct: "a",
-        comment: "A ACA irriga a face medial do lobo frontal e emite ramos penetrantes profundos. A artéria recorrente de Heubner é o maior desses ramos, irrigando parte da cápsula interna (porção anterior), a cabeça do caudado e o globo pallidus anterior. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 17,
-        question: "17. Os ramos lenticuloestriados irrigam todas as seguintes estruturas, <strong>exceto</strong>:",
-        options: [
-          {letter: "a", text: "Parte da cabeça e corpo do caudado"},
-          {letter: "b", text: "Braço posterior da cápsula interna"},
-          {letter: "c", text: "Putâmen"},
-          {letter: "d", text: "Parte externa do globo pálido"},
-          {letter: "e", text: "Tálamo"}
-        ],
-        correct: "e",
-        comment: "Os ramos penetrantes profundos (lenticuloestriados) da MCA irrigam o caudado, putâmen, globo pálido e o compartimento posterior da cápsula interna; o tálamo é irrigado por ramos da circulação posterior. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 18,
-        question: "18. Um homem de 31 anos apresenta tontura, vertigem e rouquidão após manipulação cervical por um quiropraxista inexperiente. Ao exame, há nistagmo, achados de síndrome de Horner à direita, paralisia do palato à direita, redução da sensibilidade na hemiface direita e hemicorpo esquerdo, além de ataxia à direita. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Síndrome medular medial direita"},
-          {letter: "b", text: "Síndrome medular lateral direita"},
-          {letter: "c", text: "Síndrome medular medial esquerda"},
-          {letter: "d", text: "Síndrome medular lateral esquerda"},
-          {letter: "e", text: "Infarto pontino direito"}
-        ],
-        correct: "b",
-        comment: "Este paciente apresenta a síndrome de Wallenberg (lateral da medula) decorrente de infarto na PICA direita – o que é compatível com a presença de síndrome de Horner ipsilateral, ataxia e perda sensorial contralateral. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 19,
-        question: "19. Qual das seguintes opções está correta em relação ao suprimento vascular do tálamo?",
-        options: [
-          {letter: "a", text: "É fornecido principalmente pela circulação anterior"},
-          {letter: "b", text: "A artéria coroidal anterior supre o núcleo ventral póstero-medial"},
-          {letter: "c", text: "A artéria coroidal posterior supre o núcleo ventral anterior"},
-          {letter: "d", text: "Os ramos paramedianos suprem o núcleo dorsomedial"},
-          {letter: "e", text: "A artéria coroidal posterior origina-se da artéria comunicante posterior e supre a região lateral do tálamo"}
-        ],
-        correct: "d",
-        comment: "O tálamo é irrigado principalmente pela circulação posterior. Em particular, os ramos paramédianos (tálamo-perfurantes) originados do segmento P1 da PCA irrigam o núcleo dorsomedial. (Carrera E, Bogousslavsky J. Neurology. 2006:1817–1823.)"
-      },
-      {
-        id: 20,
-        question: "20. Um homem de 49 anos apresenta ataxia. Sua TC de crânio está mostrada na Figura 2.4. Qual artéria está <strong>mais provavelmente</strong> envolvida?",
-        options: [
-          {letter: "a", text: "Artéria cerebelar ântero-inferior (AICA)"},
-          {letter: "b", text: "Artéria cerebelar superior (SCA)"},
-          {letter: "c", text: "Artéria cerebelar póstero-inferior (PICA)"},
-          {letter: "d", text: "Artéria cerebral posterior (ACP)"},
-          {letter: "e", text: "Artéria vertebral"}
-        ],
-        correct: "b",
-        comment: "A Figura 2.4 mostra um infarto que afeta principalmente o hemisfério cerebelar superior direito, compatível com um AVC na artéria cerebelar superior (SCA). (Blumenfeld H. 2002.)"
-      },
-      {
-        id: 21,
-        question: "21. Um homem de 42 anos, destra, com diabetes e cardiomiopatia dilatada, desenvolve 'confusão' aguda. Ao exame, não segue comandos e fala fluentemente, mas com frases sem sentido. Apresenta ainda déficit visual no hemicampo direito. A RM mostra evidências de AVC. Onde está a oclusão vascular <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Tronco da ACM esquerda antes da bifurcação"},
-          {letter: "b", text: "Ramos lenticuloestriados da ACM esquerda"},
-          {letter: "c", text: "Divisão superior da ACM esquerda"},
-          {letter: "d", text: "Divisão inferior da ACM esquerda"},
-          {letter: "e", text: "Ramos penetrantes ao nível da ponte"}
-        ],
-        correct: "d",
-        comment: "Este paciente provavelmente apresenta infarto na divisão inferior da MCA, o que causa afasia de Wernicke e déficits visuais no campo contralateral. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 22,
-        question: "22. Que síndrome podemos esperar em um paciente que se apresenta com AVC agudo e a MRA mostrada na Figura 2.5?",
-        options: [
-          {letter: "a", text: "Síndrome de Wallenberg"},
-          {letter: "b", text: "Síndrome de Parinaud"},
-          {letter: "c", text: "Síndrome de ACM esquerda"},
-          {letter: "d", text: "Síndrome de 'locked-in'"},
-          {letter: "e", text: "Síndrome de Dejerine–Roussy"}
-        ],
-        correct: "d",
-        comment: "O achado mais proeminente na Figura 2.5 é a ausência da artéria basilar, provavelmente por oclusão, que pode levar a um infarto pontino com a síndrome 'locked-in'. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 23,
-        question: "23. A RM mostrada na Figura 2.6. Qual das seguintes afirmações está correta sobre esta condição?",
-        options: [
-          {letter: "a", text: "Afasia e negligência são manifestações neurológicas comuns"},
-          {letter: "b", text: "Ecocardiograma transesofágico com estudo de bolhas e Holter são indicados"},
-          {letter: "c", text: "A análise patológica dessa lesão demonstraria micro-hemorragias na área afetada"},
-          {letter: "d", text: "É causada por oclusão de um vaso penetrante e está intimamente relacionada à hipertensão"},
-          {letter: "e", text: "A apresentação mais comum, nesse caso, é de déficits puramente sensitivos"}
-        ],
-        correct: "d",
-        comment: "A RM da Figura 2.6 demonstra uma pequena área de restrição à difusão compatível com um AVC lacunar, causado pela oclusão de um vaso penetrante – um processo intimamente relacionado à hipertensão (lipohialinose) e não a micro-hemorragias. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 24,
-        question: "24. Qual a anormalidade observada na MRA mostrada na Figura 2.7?",
-        options: [
-          {letter: "a", text: "Ausência da artéria vertebral esquerda"},
-          {letter: "b", text: "Oclusão da basilar"},
-          {letter: "c", text: "Oclusão da ACM esquerda"},
-          {letter: "d", text: "Oclusão da carótida interna esquerda"},
-          {letter: "e", text: "Artérias cerebrais posteriores de padrão fetal"}
-        ],
-        correct: "d",
-        comment: "A Figura 2.7 mostra a ausência da ICA esquerda, com a MCA esquerda sendo parcialmente visualizada através do fluxo colateral via artéria comunicante anterior. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 25,
-        question: "25. Qual das seguintes afirmações é <strong>incorreta</strong> sobre a artéria coroidal anterior?",
-        options: [
-          {letter: "a", text: "É um ramo da artéria carótida interna (ICA)"},
-          {letter: "b", text: "Irriga o braço posterior da cápsula interna"},
-          {letter: "c", text: "Irriga o braço anterior da cápsula interna"},
-          {letter: "d", text: "Irriga parte do trato genículo-calcarino"},
-          {letter: "e", text: "Irriga o plexo coróide nos ventrículos laterais"}
-        ],
-        correct: "c",
-        comment: "A artéria coroidal anterior não irriga o compartimento anterior da cápsula interna, que é irrigado pela artéria recorrente de Heubner e pelos ramos profundos da ACA. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 26,
-        question: "26. Uma angiografia cerebral está mostrada na Figura 2.8. Qual a anormalidade vista nessa angiografia?",
-        options: [
-          {letter: "a", text: "Oclusão da ACM esquerda"},
-          {letter: "b", text: "Oclusão da artéria vertebral esquerda"},
-          {letter: "c", text: "Oclusão da ACA no segmento A1"},
-          {letter: "d", text: "Oclusão da ICA esquerda"},
-          {letter: "e", text: "Trata-se de uma angiografia normal"}
-        ],
-        correct: "a",
-        comment: "A Figura 2.8 mostra uma angiografia convencional por cateter que demonstra a oclusão do tronco principal da MCA esquerda, sem preenchimento de contraste distal. (Harrigan MR, Deveikis JP. 2ª ed.; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 27,
-        question: "27. Qual o mecanismo mais provável do AVC mostrado na Figura 2.9?",
-        options: [
-          {letter: "a", text: "Cardioembólico"},
-          {letter: "b", text: "Lacunar"},
-          {letter: "c", text: "Êmbolo de grande artéria com aterosclerose"},
-          {letter: "d", text: "Hipotensão em contexto de estenose carotídea"},
-          {letter: "e", text: "Infarto venoso"}
-        ],
-        correct: "d",
-        comment: "A Figura 2.9 demonstra restrição à difusão em uma região de watershed entre os territórios superficial e profundo da MCA, provavelmente devido à hipotensão em contexto de estenose carotídea. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 28,
-        question: "28. Uma mulher de 39 anos apresenta síndrome de Horner à esquerda, com vertigem, ataxia do braço esquerdo e alterações sensitivas na face esquerda e hemicorpo direito. Qual a causa <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Dissecção da artéria carótida esquerda"},
-          {letter: "b", text: "Dissecção da artéria carótida direita"},
-          {letter: "c", text: "Dissecção da artéria vertebral esquerda"},
-          {letter: "d", text: "Dissecção da artéria vertebral direita"},
-          {letter: "e", text: "AVC em território da ACM direita"}
-        ],
-        correct: "c",
-        comment: "Esta paciente apresenta síndrome de Horner do lado esquerdo com outros sinais que localizam a lesão no tronco encefálico (envolvendo os núcleos trigeminal, vestibular e cerebelar) – quadro que é melhor explicado por uma dissecção da artéria vertebral esquerda. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 29,
-        question: "29. Uma mulher de 52 anos apresenta início agudo de hemiparesia direita. Uma TC de crânio é obtida e mostrada na Figura 2.10. Qual das seguintes afirmações está correta?",
-        options: [
-          {letter: "a", text: "Essa paciente tem risco de vasoespasmo"},
-          {letter: "b", text: "A causa dos sintomas é um AVC lacunar"},
-          {letter: "c", text: "Pode ser necessária craniectomia suboccipital para descompressão"},
-          {letter: "d", text: "A paciente apresenta hemorragia hipertensiva"},
-          {letter: "e", text: "A paciente apresenta oclusão da ACM"}
-        ],
-        correct: "e",
-        comment: "A Figura 2.10 mostra o sinal hiper denso da MCA esquerda, indicando a oclusão da MCA – um sinal com boa especificidade para oclusão ateroembólica. (Jha B, et al. Neurology. 2009;72:e116–e117.)"
-      },
-      {
-        id: 30,
-        question: "30. Um homem de 59 anos, com histórico de diabetes, hipertensão e hiperlipidemia, chega com PA de 60/30 mmHg e confusão mental. Sua creatinoquinase está muito elevada, com fração MB de 12%. Sua troponina está elevada, e o ECG mostra depressões de ST em derivações inferiores. Após estabilização, nota-se fraqueza no lado esquerdo, mais proeminente nos abdutores do ombro e flexores do quadril. Qual o mecanismo mais provável da fraqueza?",
-        options: [
-          {letter: "a", text: "Fraqueza decorrente de miopatia"},
-          {letter: "b", text: "Infarto lacunar na cápsula interna"},
-          {letter: "c", text: "Hipotensão em contexto de estenose da carótida interna esquerda"},
-          {letter: "d", text: "Hipotensão em contexto de estenose da carótida interna direita"},
-          {letter: "e", text: "Evento cardioembólico associado a arritmia"}
-        ],
-        correct: "d",
-        comment: "Dada a hipotensão e o padrão de fraqueza (predominância proximal), o quadro é mais consistente com um infarto de watershed secundário à hipotensão em contexto de estenose carotídea – neste caso, a estenose da carótida interna direita, causando déficits no lado esquerdo. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 31,
-        question: "31. Um homem de 57 anos apresenta início agudo de disartria, paralisia do braço e perna direitos, com preservação da face, e perda da sensibilidade de posição e vibração no lado direito do corpo. Ao exame, nota-se que a língua desvia para a esquerda. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Síndrome medular lateral direita"},
-          {letter: "b", text: "Síndrome medular medial esquerda"},
-          {letter: "c", text: "Síndrome medular medial direita"},
-          {letter: "d", text: "Infarto pontino direito"},
-          {letter: "e", text: "Síndrome medular lateral esquerda"}
-        ],
-        correct: "b",
-        comment: "Este paciente apresenta síndrome medular medial (síndrome de Dejerine) devido à oclusão de um ramo da artéria vertebral, resultando em fraqueza contralateral e perda de propriocepção, com fraqueza da língua ipsilateral. (Goetz CG; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 32,
-        question: "32. Uma mulher de 65 anos foi a um parque de diversões e andou em uma montanha-russa. Cerca de 3 semanas depois, teve um episódio compatível com amaurose fugaz no olho esquerdo. Ela se queixa de cefaleias, sente fraqueza 'em todo o corpo' e refere dor nos ombros há pelo menos 6 meses. Relata também que, ao mastigar, fica cansada e a mandíbula começa a doer. Qual a <strong>melhor</strong> próxima etapa?",
-        options: [
-          {letter: "a", text: "Angiografia cerebral"},
-          {letter: "b", text: "Angiografia por TC de pescoço"},
-          {letter: "c", text: "Iniciar heparina e depois fazer ponte para varfarina"},
-          {letter: "d", text: "Agendar biópsia da artéria temporal"},
-          {letter: "e", text: "Iniciar corticosteroides"}
-        ],
-        correct: "e",
-        comment: "Esta paciente apresenta sintomas compatíveis com arterite temporal (arterite de células gigantes) – com cefaleia, claudicação mandibular e amaurose fugaz – que requerem tratamento imediato com corticosteroides para prevenir perda visual permanente. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 33,
-        question: "33. Uma mulher de 49 anos apresenta início agudo de hemiplegia esquerda e fraqueza facial à direita, envolvendo movimentos faciais superiores e inferiores. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Infarto pontino direito"},
-          {letter: "b", text: "Infarto pontino esquerdo"},
-          {letter: "c", text: "Infarto mesencefálico direito"},
-          {letter: "d", text: "Infarto mesencefálico esquerdo"},
-          {letter: "e", text: "Infarto em território da ACM direita"}
-        ],
-        correct: "a",
-        comment: "Esta paciente apresenta a síndrome de Millard–Gubler, caracterizada por hemiplegia contralateral com paralisia facial ipsilateral, decorrente de uma lesão pontina. (Ropper AH, et al. 10ª ed.; Silverman IE, et al. Arch Neurol. 1995;52:635–638.)"
-      },
-      {
-        id: 34,
-        question: "34. Uma mulher de 42 anos apresenta cefaleias e é encontrada com um aneurisma na bifurcação da ACM esquerda. Ela questiona sobre riscos. Qual das seguintes afirmações <strong>não</strong> é correta?",
-        options: [
-          {letter: "a", text: "Pacientes com aneurisma previamente rompido têm maior risco de HSA (hemorragia subaracnóidea)"},
-          {letter: "b", text: "Tabagismo é fator de risco para ruptura de aneurisma"},
-          {letter: "c", text: "Aneurismas na circulação anterior têm maior risco de ruptura em comparação aos da circulação posterior"},
-          {letter: "d", text: "A idade do paciente deve ser considerada na formulação da estratégia de manejo"},
-          {letter: "e", text: "Hipertensão descontrolada pode ser um fator de risco para ruptura de aneurisma"}
-        ],
-        correct: "c",
-        comment: "Os aneurismas da circulação anterior geralmente apresentam menor risco de ruptura em comparação com os da circulação posterior. (Brisman JL, et al. N Engl J Med. 2006;355:928–939.)"
-      },
-      {
-        id: 35,
-        question: "35. Um homem de 59 anos, destro, apresenta déficits neurológicos. Uma TC de crânio foi obtida e está mostrada na Figura 2.11. Qual das seguintes manifestações <strong>não</strong> seria esperada como resultado dessa lesão?",
-        options: [
-          {letter: "a", text: "Hemianopsia homônima direita"},
-          {letter: "b", text: "Anomia"},
-          {letter: "c", text: "Alexia"},
-          {letter: "d", text: "Agnosia visual"},
-          {letter: "e", text: "Afasia expressiva"}
-        ],
-        correct: "e",
-        comment: "Um infarto occipital esquerdo, no território da PCA, tipicamente causa hemianopsia homônima, alexia sem agrafia (quando o esplênio está envolvido), anomia e agnosia visual; entretanto, a afasia expressiva (de Broca) não é esperada. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 36,
-        question: "36. Uma mulher de 52 anos, diabética, chega ao consultório com início súbito de diplopia vertical, dificuldade de adução e de movimentos verticais do olho direito. Ela também tem tremor e movimentos do tipo coreoatetose no lado esquerdo do corpo. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Infarto no tegmento mesencefálico ventral à direita"},
-          {letter: "b", text: "Infarto no tegmento mesencefálico ventral à esquerda"},
-          {letter: "c", text: "Infarto pontino direito"},
-          {letter: "d", text: "Infarto pontino esquerdo"},
-          {letter: "e", text: "Infarto da placa quadrigêmea"}
-        ],
-        correct: "a",
-        comment: "Este paciente apresenta infarto na porção ventral do tegmento mesencefálico direito, envolvendo o núcleo vermelho e os feixes do terceiro nervo, que resultam em paralisia do terceiro nervo ipsilateral com movimentos involuntários contralaterais (síndrome de Benedikt). (Daroff RB, et al. 6ª ed.)"
-      },
-      {
-        id: 37,
-        question: "37. Um paciente destro apresenta início agudo de déficits neurológicos, e a RM de encéfalo está mostrada na Figura 2.12. Qual das seguintes manifestações pode ser observada neste paciente?",
-        options: [
-          {letter: "a", text: "Negligência do lado esquerdo do corpo"},
-          {letter: "b", text: "Desvio do olhar para a direita"},
-          {letter: "c", text: "Afasia global"},
-          {letter: "d", text: "Paresia da perna direita mais do que da face e braço"},
-          {letter: "e", text: "Hemianopsia homônima esquerda"}
-        ],
-        correct: "c",
-        comment: "Este paciente apresenta infarto na distribuição da MCA esquerda (hemisfério dominante) e, consequentemente, manifesta afasia global, hemiparesia contralateral (afetando face, braço e perna) e hemianopsia homônima direita. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 38,
-        question: "38. Qual dos seguintes pacientes deve ser manejado com agentes antiplaquetários para prevenção de AVC?",
-        options: [
-          {letter: "a", text: "Homem de 50 anos que teve um IAM com supradesnivelamento de ST há uma semana, com fração de ejeção de 30% e trombo no ventrículo esquerdo"},
-          {letter: "b", text: "Mulher de 49 anos com válvula cardíaca mecânica"},
-          {letter: "c", text: "Homem de 52 anos com hipertireoidismo e estenose aterosclerótica intracraniana"},
-          {letter: "d", text: "Homem de 76 anos com fibrilação atrial, diabetes, hipertensão e insuficiência cardíaca"},
-          {letter: "e", text: "Homem de 70 anos com trombo intracardíaco"}
-        ],
-        correct: "c",
-        comment: "Um homem de 52 anos com hipertireoidismo e estenose aterosclerótica intracraniana deve ser manejado com agentes antiplaquetários, diferentemente dos pacientes com fontes cardioembólicas, que exigem anticoagulação. (WASID trial; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 39,
-        question: "39. Um homem de 49 anos, destro, com histórico de fibrilação atrial e hipertensão, apresenta início agudo de hemiparesia direita afetando face, braço e perna. Seu olhar está desviado para a esquerda, com hemianopsia homônima direita e afasia global. Qual a localização da oclusão vascular?",
-        options: [
-          {letter: "a", text: "Tronco da ACM esquerda antes da bifurcação"},
-          {letter: "b", text: "Ramos lenticuloestriados da ACM esquerda"},
-          {letter: "c", text: "Divisão inferior da ACM esquerda"},
-          {letter: "d", text: "Ramos penetrantes ao nível da ponte"},
-          {letter: "e", text: "Divisão superior da ACM esquerda"}
-        ],
-        correct: "a",
-        comment: "Este paciente apresenta oclusão do tronco da MCA esquerda, antes da bifurcação, afetando estruturas corticais e subcorticais – o que explica a afasia global, hemiplegia e o defeito visual. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 40,
-        question: "40. Qual das seguintes é <strong>incorreta</strong> sobre a circulação intracraniana?",
-        options: [
-          {letter: "a", text: "A ACA e a ACM surgem da carótida interna (ICA)"},
-          {letter: "b", text: "As artérias cerebrais posteriores (ACP) são ramos da artéria basilar"},
-          {letter: "c", text: "A artéria pericallosa origina-se da circulação anterior"},
-          {letter: "d", text: "Os ramos lenticuloestriados originam-se da ACP"},
-          {letter: "e", text: "A artéria recorrente de Heubner origina-se da ACA"}
-        ],
-        correct: "d",
-        comment: "Os ramos lenticuloestriados originam-se do tronco da MCA, antes da bifurcação, e não da ACP. (Blumenfeld H; Morris P. Practical Neuroangiography.)"
-      },
-      {
-        id: 41,
-        question: "41. Um homem de 50 anos com hipertensão controlada apresenta histórico de AIT há cerca de um mês. Foi iniciada aspirina 81 mg. A investigação de fonte cardioembólica foi negativa, o ultrassom de carótidas mostrou estenose não significativa e o LDL estava em 140 mg/dL. Qual dos seguintes agentes demonstrou prevenir eventos cerebrovasculares recorrentes e deve ser utilizado nesse paciente?",
-        options: [
-          {letter: "a", text: "Inibidores da HMG-CoA redutase (estatinas)"},
-          {letter: "b", text: "Varfarina"},
-          {letter: "c", text: "Ativador de plasminogênio tecidual (tPA)"},
-          {letter: "d", text: "Heparina"},
-          {letter: "e", text: "Terapia de reposição hormonal"}
-        ],
-        correct: "a",
-        comment: "Estudos demonstram que as estatinas reduzem o risco de eventos cerebrovasculares recorrentes em pacientes com AIT ou AVC. (SPARCL trial; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 42,
-        question: "42. Um paciente apresenta limitação do olhar para cima bilateralmente, nistagmo na convergência e desvio vertical (skew deviation). As pupilas estão fixas, com alteração de acomodação e dissociação entre a resposta à luz e ao foco próximo (light-near dissociation). Onde está localizada a lesão?",
-        options: [
-          {letter: "a", text: "Parte ventral do mesencéfalo"},
-          {letter: "b", text: "Ponte"},
-          {letter: "c", text: "Bulbo (medula)"},
-          {letter: "d", text: "Tálamos bilaterais"},
-          {letter: "e", text: "Placa quadrigêmea (região dorsal do mesencéfalo, próxima aos colículos)"}
-        ],
-        correct: "e",
-        comment: "Este paciente apresenta síndrome de Parinaud, caracterizada por paralisia supranuclear do olhar, nistagmo de convergência-retração, dissociação light-near e desvio vertical; a lesão está localizada no mesencéfalo dorsal, na região da placa quadrigêmea. (Goetz CG; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 43,
-        question: "43. Uma mulher de 53 anos, que passou por cirurgia de revascularização do miocárdio há 5 dias, desenvolve início agudo de hemiparesia direita e afasia. A TC de crânio, feita 30 minutos após o início dos sintomas, não mostra hemorragia nem evidências de AVC isquêmico agudo. A pressão arterial está em 170/100 mmHg e a glicemia é de 48 mg/dL. O NIHSS inicial era 16, mas após correção da hipoglicemia caiu para 3. Decide-se não administrar tPA IV. Qual das seguintes <strong>não</strong> é uma contraindicação para essa terapia?",
-        options: [
-          {letter: "a", text: "Cirurgia de grande porte nos últimos 14 dias"},
-          {letter: "b", text: "Crise epiléptica no início do evento"},
-          {letter: "c", text: "Sintomas rapidamente melhorando ou déficit de intensidade mínima"},
-          {letter: "d", text: "Glicose menor que 50 mg/dL"},
-          {letter: "e", text: "TC de crânio sem evidência de infarto agudo"}
-        ],
-        correct: "e",
-        comment: "Uma TC de crânio normal (sem evidência de infarto agudo) não é uma contraindicação para o tPA IV; as contraindicações incluem melhora rápida dos sintomas, hipoglicemia, cirurgia recente e crises epilépticas, mas uma TC normal é necessária para excluir hemorragia. (Jauch EC, et al. Stroke. 2013.)"
-      },
-      {
-        id: 44,
-        question: "44. Um homem de 50 anos com histórico de AVC em território da ACM direita apresenta estenose grave da ACM direita na MRA. Qual das seguintes opções tem evidência para uso terapêutico inicial?",
-        options: [
-          {letter: "a", text: "Bypass cirúrgico"},
-          {letter: "b", text: "Angioplastia"},
-          {letter: "c", text: "Colocação de stent"},
-          {letter: "d", text: "Varfarina"},
-          {letter: "e", text: "Aspirina e clopidogrel"}
-        ],
-        correct: "e",
-        comment: "Para pacientes com estenose aterosclerótica intracraniana sintomática, a terapia médica ótima – com aspirina, modificação dos fatores de risco e, em alguns casos, terapia dupla antiplaquetária – é recomendada em vez de procedimentos invasivos. (SAMMPRIS trial; Chimowitz MI, et al. 2011.)"
-      },
-      {
-        id: 45,
-        question: "45. Um homem de 59 anos apresenta início súbito de hemiparesia direita e afasia. O NIHSS é 18. É obtida uma TC e calculado o ASPECTS. Qual das seguintes afirmações é correta?",
-        options: [
-          {letter: "a", text: "Um escore de 3 favorece o uso de tPA IV"},
-          {letter: "b", text: "São necessários três cortes de TC para calcular esse escore"},
-          {letter: "c", text: "O escore máximo é 20"},
-          {letter: "d", text: "Um escore de 7 ou menos está associado a maior dependência e mortalidade"},
-          {letter: "e", text: "O escore mínimo é 3"}
-        ],
-        correct: "d",
-        comment: "O ASPECTS (Alberta Stroke Program Early CT Score) é utilizado para avaliar alterações isquêmicas precoces na TC; um escore de 7 ou menos correlaciona-se com piores desfechos e maior mortalidade. (Pexman JH, et al. Am J Neuroradiol. 2001.)"
-      },
-      {
-        id: 46,
-        question: "46. Qual das seguintes é <strong>incorreta</strong> sobre a artéria carótida interna (ICA)?",
-        options: [
-          {letter: "a", text: "O segmento cervical se estende desde a bifurcação até o canal carotídeo e não possui ramos"},
-          {letter: "b", text: "O segmento petroso localiza-se na região petrosa do osso temporal"},
-          {letter: "c", text: "A artéria oftálmica origina-se do segmento oftálmico"},
-          {letter: "d", text: "O segmento cavernoso percorre o seio cavernoso"},
-          {letter: "e", text: "A artéria coroidal anterior origina-se do segmento petroso"}
-        ],
-        correct: "e",
-        comment: "A artéria coroidal anterior origina-se do segmento supraclinoide (comunicante) da ICA, e não do segmento petroso. (Blumenfeld H; Bouthillier A, et al. 1996.)"
-      },
-      {
-        id: 47,
-        question: "47. Uma mulher de 69 anos, com histórico de AVC hemisférico direito, hipertensão, hiperlipidemia e diabetes, apresenta novos sintomas de dormência do lado esquerdo. O ultrassom de carótidas está sendo solicitado para avaliar a indicação de endarterectomia. Qual das seguintes afirmações está correta?",
-        options: [
-          {letter: "a", text: "Uma estenose de carótida direita > 70% deve ser tratada clinicamente neste caso"},
-          {letter: "b", text: "Uma estenose de carótida esquerda < 50% deve ser tratada cirurgicamente"},
-          {letter: "c", text: "Recomenda-se tratamento cirúrgico se houver oclusão da carótida direita"},
-          {letter: "d", text: "Uma estenose de carótida direita < 50% se beneficia de tratamento cirúrgico"},
-          {letter: "e", text: "A endarterectomia para estenose carotídea sintomática de 50% a 69% é menos benéfica em mulheres do que em homens"}
-        ],
-        correct: "e",
-        comment: "Em estenose carotídea sintomática, estudos (por exemplo, NASCET) demonstram que os benefícios da endarterectomia são menos pronunciados em mulheres com estenose entre 50% e 69%. (North American Symptomatic Carotid Endarterectomy Trial.)"
-      },
-      {
-        id: 48,
-        question: "48. Um homem de 61 anos, com histórico de diabetes, hiperlipidemia e hipertensão, apresenta hemiparesia esquerda sem comprometimento da fala. Os sintomas se resolvem enquanto ele é avaliado. Qual das seguintes afirmativas é correta?",
-        options: [
-          {letter: "a", text: "O paciente deve receber alta e nenhuma investigação adicional é necessária"},
-          {letter: "b", text: "O paciente pode receber alta com retorno em 3 meses; não é necessária mudança terapêutica"},
-          {letter: "c", text: "Deve-se observar antes de iniciar trombólise, para confirmar se se trata de AIT e não de AVC"},
-          {letter: "d", text: "Não é necessário solicitar RM, pois os sintomas se resolveram"},
-          {letter: "e", text: "O risco de AVC é mais alto no período imediatamente subsequente a um AIT"}
-        ],
-        correct: "e",
-        comment: "Pacientes com AIT têm alto risco de AVC subsequente, especialmente nas primeiras 48 horas até 3 meses, sendo necessária avaliação urgente e modificação dos fatores de risco. (Easton JD, et al. Stroke. 2009;40:2276–2293.)"
-      },
-      {
-        id: 49,
-        question: "49. Um homem de 60 anos apresenta déficits neurológicos agudos. Sua TC de crânio está mostrada na Figura 2.13. Qual a etiologia <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Angiopatia amiloide"},
-          {letter: "b", text: "Aneurisma intracraniano"},
-          {letter: "c", text: "Anticoagulação"},
-          {letter: "d", text: "Hipertensão"},
-          {letter: "e", text: "Trombose de seio venoso"}
-        ],
-        correct: "d",
-        comment: "A Figura 2.13 mostra uma hemorragia intracerebral profunda, provavelmente decorrente de hipertensão, que é a causa mais comum de HIC espontâneo. (Manno EM, et al. Mayo Clin Proc. 2005;80:420–433.)"
-      },
-      {
-        id: 50,
-        question: "50. Uma garota de 14 anos chega para avaliação com diagnóstico presuntivo de Moyamoya. Qual das seguintes afirmações é <strong>incorreta</strong> sobre essa condição?",
-        options: [
-          {letter: "a", text: "Há estenose bilateral das artérias carótidas internas intracranianas e de outros ramos do círculo de Willis"},
-          {letter: "b", text: "Observa-se extensa circulação colateral na angiografia, parecendo uma 'nuvem de fumaça'"},
-          {letter: "c", text: "Afeta predominantemente crianças e adolescentes"},
-          {letter: "d", text: "Podem ocorrer isquemia cerebral e hemorragia"},
-          {letter: "e", text: "A anticoagulação demonstrou benefício comprovado nesses pacientes"}
-        ],
-        correct: "e",
-        comment: "Na doença de Moyamoya, a anticoagulação não é recomendada devido ao alto risco hemorrágico; o tratamento é normalmente a revascularização cirúrgica. (Daroff RB, et al. 6ª ed.; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 51,
-        question: "51. Um homem de 82 anos apresenta hemorragia intracraniana envolvendo todo o lobo temporal esquerdo. Ele possui histórico de três HIC anteriores. Uma RM obtida alguns anos atrás para avaliação de demência, antes da hemorragia atual, está mostrada na Figura 2.14. Qual o diagnóstico e causa <strong>mais provável</strong> de sua hemorragia atual?",
-        options: [
-          {letter: "a", text: "Angiopatia amiloide"},
-          {letter: "b", text: "Aneurisma intracraniano"},
-          {letter: "c", text: "Anticoagulação"},
-          {letter: "d", text: "Hipertensão"},
-          {letter: "e", text: "Trombose de seio venoso"}
-        ],
-        correct: "a",
-        comment: "A hemorragia lobar com episódios hemorrágicos múltiplos e idade avançada é mais compatível com angiopatia amiloide. (Ropper AH, et al. 10ª ed.; Daroff RB, et al. 6ª ed.)"
-      },
-      {
-        id: 52,
-        question: "52. Uma mulher de 49 anos sofre um AVC isquêmico agudo com perda sensitiva significativa em todo o hemicorpo esquerdo. Cerca de 3 semanas depois, ela retorna reclamando de sensação dolorosa intensa ao toque leve e dor em queimação profunda na mesma região. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Infarto medular"},
-          {letter: "b", text: "Infarto mesencefálico"},
-          {letter: "c", text: "Infarto de caudado"},
-          {letter: "d", text: "Infarto pontino"},
-          {letter: "e", text: "Infarto talâmico"}
-        ],
-        correct: "e",
-        comment: "Esta paciente apresenta a síndrome de Dejerine–Roussy, que ocorre após um infarto talâmico, levando a perda sensorial intensa, frequentemente dolorosa, com disestesia. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 53,
-        question: "53. Qual das seguintes afirmações é <strong>incorreta</strong> sobre a circulação posterior?",
-        options: [
-          {letter: "a", text: "As artérias coroides posteriores têm origem na circulação posterior"},
-          {letter: "b", text: "As artérias coroides anteriores têm origem na circulação posterior"},
-          {letter: "c", text: "A artéria espinal anterior origina-se das artérias vertebrais"},
-          {letter: "d", text: "A artéria cerebelar póstero-inferior (PICA) origina-se das artérias vertebrais"},
-          {letter: "e", text: "Um segmento da artéria vertebral percorre os forames transversos entre C5–C6 e C2"}
-        ],
-        correct: "b",
-        comment: "As artérias coroides anteriores originam-se da ICA (circulação anterior), não da circulação posterior; portanto, a afirmação (b) está incorreta em relação à circulação posterior. (Blumenfeld H, 2002.)"
-      },
-      {
-        id: 54,
-        question: "54. Uma mulher de 29 anos, fumante, que faz uso de contraceptivos orais, com histórico de anticorpos antifosfolípides e uma infecção recente não tratada no ouvido médio esquerdo, desenvolveu cefaleia e hemiparesia à direita, progredindo para coma. Uma RM é obtida e mostrada na Figura 2.15. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Hemorragia hipertensiva"},
-          {letter: "b", text: "AVC em território da ACP com transformação hemorrágica"},
-          {letter: "c", text: "Hemorragia associada à angiopatia amiloide"},
-          {letter: "d", text: "Infarto venoso com hemorragia"},
-          {letter: "e", text: "Hemorragia subaracnóidea (HSA)"}
-        ],
-        correct: "d",
-        comment: "Com base na história, fatores de risco e achados na RM, esta paciente provavelmente apresenta um infarto hemorrágico devido à trombose dos seios venosos (neste caso, do seio transverso esquerdo) e não uma hemorragia arterial. (Stam J, N Engl J Med. 2005;352:1791–1798.)"
-      },
-      {
-        id: 55,
-        question: "55. Uma mulher de 49 anos, hipertensa sem uso de medicação, apresenta um AIT sugestivo de isquemia no território da ACM direita. Os exames mostram 70% de estenose na ACM direita. Qual a <strong>melhor</strong> opção terapêutica para essa paciente?",
-        options: [
-          {letter: "a", text: "Iniciar aspirina"},
-          {letter: "b", text: "Iniciar varfarina"},
-          {letter: "c", text: "Angioplastia intracraniana isolada"},
-          {letter: "d", text: "Angioplastia intracraniana com stent"},
-          {letter: "e", text: "Cirurgia de bypass extracraniano/intracraniano (EC/IC)"}
-        ],
-        correct: "a",
-        comment: "Para pacientes com AIT ou AVC decorrentes de estenose aterosclerótica intracraniana, a terapia médica ótima – com aspirina, modificação dos fatores de risco (controle da pressão arterial, LDL, glicemia) e, às vezes, terapia antiplaquetária dupla – é recomendada. (WASID trial; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 56,
-        question: "56. Um homem de 61 anos apresenta início agudo de diplopia e dificuldade de usar a mão direita. Ao exame, há paralisia do terceiro nervo craniano à esquerda, tremor e ataxia do lado direito, mas sem movimentos coreoatetósicos. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Infarto hemisférico esquerdo"},
-          {letter: "b", text: "Infarto pontino esquerdo"},
-          {letter: "c", text: "Infarto mesencefálico esquerdo"},
-          {letter: "d", text: "Infarto pontino direito"},
-          {letter: "e", text: "Infarto mesencefálico direito"}
-        ],
-        correct: "c",
-        comment: "Este paciente apresenta a síndrome de Claude, caracterizada por paralisia do terceiro nervo craniano ipsilateral com ataxia e tremor contralaterais, devido a um infarto no tegmento mesencefálico. (Daroff RB, et al. 6ª ed.)"
-      },
-      {
-        id: 57,
-        question: "57. Um homem de 34 anos apresenta vertigem e dor cervical após manipulação cervical por um quiropraxista inexperiente. A RM mostra perda de sinal no seio transverso esquerdo. Qual das seguintes afirmações é correta sobre essa condição?",
-        options: [
-          {letter: "a", text: "Ecocardiograma com bolhas é indicado"},
-          {letter: "b", text: "Devido à hipertensão, não há necessidade de investigar causas pró-trombóticas"},
-          {letter: "c", text: "A infecção do ouvido médio não é um fator etiológico"},
-          {letter: "d", text: "A anticoagulação é contraindicada"},
-          {letter: "e", text: "O tratamento com anticoagulação é indicado"}
-        ],
-        correct: "c",
-        comment: "Este paciente apresenta trombose do seio transverso esquerdo. Em casos de trombose dos seios venosos, é importante investigar fatores pró-trombóticos – e, neste caso, a infecção do ouvido médio é um fator etiológico conhecido. (Stam J, N Engl J Med. 2005;352:1791–1798.)"
-      },
-      {
-        id: 58,
-        question: "58. Um homem de 67 anos, com histórico de fibrilação atrial e AIT recente, apresenta-se para avaliação. Decide-se iniciar varfarina. Qual dos seguintes fatores <strong>não</strong> é rotineiramente considerado na avaliação do risco de AVC em pacientes com fibrilação atrial?",
-        options: [
-          {letter: "a", text: "Histórico de diabetes mellitus"},
-          {letter: "b", text: "Histórico de insuficiência cardíaca congestiva"},
-          {letter: "c", text: "Histórico de hipertensão"},
-          {letter: "d", text: "Histórico de AVC ou AIT"},
-          {letter: "e", text: "Histórico de hiperlipidemia"}
-        ],
-        correct: "e",
-        comment: "A hiperlipidemia não está incluída nas pontuações de estratificação de risco (CHADS2/CHA2DS2-VASc) para fibrilação atrial. (Meschia JF, et al. Stroke. 2014.)"
-      },
-      {
-        id: 59,
-        question: "59. Qual das seguintes é <strong>incorreta</strong> sobre o sistema venoso?",
-        options: [
-          {letter: "a", text: "Veias do couro cabeludo comunicam-se com seios venosos durais por meio de veias emissárias"},
-          {letter: "b", text: "A veia oftálmica drena para o seio cavernoso"},
-          {letter: "c", text: "O seio cavernoso drena para os seios petrosos superior e inferior"},
-          {letter: "d", text: "A veia de Labbé é a veia anastomótica superior"},
-          {letter: "e", text: "A veia de Rosenthal é uma veia profunda"}
-        ],
-        correct: "d",
-        comment: "A veia de Labbe não é a veia anastomótica superior, mas sim a veia anastomótica inferior. (Harrigan MR, Deveikis JP. 2ª ed.)"
-      },
-      {
-        id: 60,
-        question: "60. Um homem de 52 anos, com histórico de enxaquecas e vários 'mini-AVCs', em uso de aspirina, apresenta um novo AVC puramente motor. A RM mostra múltiplos lacunes subcorticais e alterações difusas da substância branca. A investigação de rotina é negativa, e ele não tem diabetes, hipertensão ou dislipidemia. Após alta, retorna cerca de 3 anos depois com quadro de demência. Sua esposa relata que três irmãos também tiveram AVCs em idades jovens e que seu pai teve AVCs e desenvolveu demência precocemente. O paciente falece e, na autópsia, o estudo histopatológico do cérebro está mostrado na Figura 2.17. Qual das seguintes afirmações é correta sobre essa condição?",
-        options: [
-          {letter: "a", text: "É uma doença autossômica recessiva"},
-          {letter: "b", text: "Parkinsonismo é uma característica clássica"},
-          {letter: "c", text: "É associada à mutação do NOTCH3"},
-          {letter: "d", text: "É um transtorno ligado ao cromossomo X"},
-          {letter: "e", text: "Enxaquecas não estão associadas a essa condição"}
-        ],
-        correct: "c",
-        comment: "Este paciente apresenta CADASIL – arteriopatia cerebral autossômica dominante com infartos subcorticais e leucoencefalopatia – que está associada à mutação do gene NOTCH3. (Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 61,
-        question: "61. Um homem de 45 anos sofre um IAM com supradesnivelamento e é submetido à angioplastia transluminal percutânea com stent na artéria descendente anterior esquerda. Posteriormente, desenvolve hemiplegia direita e diplopia, pior ao olhar para cima e para a direita, com limitação de adução e movimentos para cima do olho esquerdo. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Infarto pontino direito"},
-          {letter: "b", text: "Infarto mesencefálico esquerdo"},
-          {letter: "c", text: "Infarto pontino esquerdo"},
-          {letter: "d", text: "Infarto mesencefálico direito"},
-          {letter: "e", text: "Infarto da cápsula interna esquerda"}
-        ],
-        correct: "b",
-        comment: "Este paciente apresenta a síndrome de Weber, caracterizada por paralisia do terceiro nervo craniano ipsilateral e hemiplegia contralateral, devido a um infarto no mesencéfalo. (Daroff RB, et al. 6ª ed.; Goetz CG, 3ª ed.)"
-      },
-      {
-        id: 62,
-        question: "62. Uma RM de encéfalo está mostrada na Figura 2.18. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Malformação arteriovenosa (MAV)"},
-          {letter: "b", text: "Malformação cavernosa"},
-          {letter: "c", text: "Fístula arteriovenosa dural (DAVF)"},
-          {letter: "d", text: "Angioma venoso"},
-          {letter: "e", text: "Telangiectasia capilar"}
-        ],
-        correct: "b",
-        comment: "A aparência na RM, com uma lesão 'tipo pipoca' e anel de hemosiderina, é característica de uma malformação cavernosa. (Prayson RA, Goldblum Jr.; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 63,
-        question: "63. Qual das seguintes é <strong>incorreta</strong> sobre a circulação arterial cérvico-cerebral?",
-        options: [
-          {letter: "a", text: "A artéria carótida comum esquerda, na maioria das vezes, se origina diretamente do arco aórtico"},
-          {letter: "b", text: "A artéria vertebral esquerda se origina da artéria subclávia esquerda"},
-          {letter: "c", text: "A artéria carótida comum direita se origina do tronco braquiocefálico (inominado)"},
-          {letter: "d", text: "A artéria carótida comum esquerda pode se originar do tronco braquiocefálico em alguns casos"},
-          {letter: "e", text: "A carótida comum geralmente se bifurca em carótida interna e externa ao nível de C7"}
-        ],
-        correct: "e",
-        comment: "A artéria carótida comum normalmente se bifurca ao nível de C4 (próximo ao ângulo da mandíbula), e não em C7. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
-      },
-      {
-        id: 64,
-        question: "64. Um homem de 52 anos apresenta instabilidade progressiva da marcha e fraqueza dos membros inferiores há 3 meses. Relata que, na semana passada, acordou sem conseguir mover as pernas. Sua RM está mostrada na Figura 2.19. Suspeita-se de uma anomalia vascular. Qual o diagnóstico <strong>mais provável</strong>?",
-        options: [
-          {letter: "a", text: "Hematoma extradural"},
-          {letter: "b", text: "Malformação cavernosa"},
-          {letter: "c", text: "Fístula arteriovenosa dural espinhal"},
-          {letter: "d", text: "Angioma venoso"},
-          {letter: "e", text: "Infarto medular espinhal"}
-        ],
-        correct: "c",
-        comment: "Este paciente apresenta uma fístula arteriovenosa dural espinhal (DAVF), a malformação vascular espinhal mais comum, que tipicamente causa mielopatia progressiva. (Krings T, Geibprasert S. Am J Neuroradiol. 2009;30:639–648.)"
-      },
-      {
-        id: 65,
-        question: "65. Com base nos estudos de imagem na Figura 2.20, qual afirmação é correta?",
-        options: [
-          {letter: "a", text: "Trata-se de um sangramento hiperagudo"},
-          {letter: "b", text: "Não se trata de uma hemorragia"},
-          {letter: "c", text: "É uma hemorragia antiga, provavelmente com mais de 1 mês"},
-          {letter: "d", text: "Trata-se de uma hemorragia com cerca de 1 semana"},
-          {letter: "e", text: "Essa hemorragia ocorreu nas últimas 24 horas"}
-        ],
-        correct: "d",
-        comment: "Com base nas características de sinal da TC e da RM, estima-se que a hemorragia tenha aproximadamente 1 semana de evolução. (Daroff RB, et al. 6ª ed.; Mohr JP, et al. 5ª ed.)"
-      },
-      {
-        id: 66,
-        question: "66. Qual o local <strong>mais comum</strong> de aneurisma sacular intracraniano?",
-        options: [
-          {letter: "a", text: "Topo da artéria basilar"},
-          {letter: "b", text: "Origem da artéria cerebelar póstero-inferior (PICA)"},
-          {letter: "c", text: "Artéria comunicante anterior"},
-          {letter: "d", text: "Bifurcação da artéria cerebral média (ACM)"},
-          {letter: "e", text: "Artéria pericallosa"}
-        ],
-        correct: "c",
-        comment: "Os aneurismas saculares são mais frequentemente localizados na artéria comunicante anterior (≈30%). (Brisman JL, et al. N Engl J Med. 2006;355:928–939.)"
-      },
-      {
-        id: 67,
-        question: "67. Um homem de 56 anos envolveu-se em uma briga e sofreu trauma facial com tijolo. Posteriormente, notou que não conseguia abrir o olho esquerdo, com edema periorbital progressivo, proptose e oftalmoplegia do olho esquerdo. A pressão intraocular está elevada, com redução da acuidade visual. A TC não mostra hemorragia. Qual das seguintes afirmações é correta sobre essa lesão?",
-        options: [
-          {letter: "a", text: "Este paciente apresenta uma fístula carotídeo-cavernosa direta"},
-          {letter: "b", text: "Trata-se de uma malformação arteriovenosa no lobo temporal medial"},
-          {letter: "c", text: "Os sintomas oculares e paralisias de nervos cranianos não melhoram mesmo com tratamento"},
-          {letter: "d", text: "O tratamento cirúrgico aberto é a melhor opção para essa lesão"},
-          {letter: "e", text: "Os ramos alimentadores (feeders) são ramos da artéria carótida externa"}
-        ],
-        correct: "a",
-        comment: "A história clínica e os achados angiográficos são compatíveis com uma fístula carotídeo-cavernosa direta, geralmente pós-traumática, de alto fluxo, que causa os sinais oculares observados. (Ellis JA, et al. Neurosurg Focus. 2012;32:E9.)"
-      },
-      {
-        id: 68,
-        question: "68. Uma mulher de 45 anos apresentou zumbido pulsátil e foi diagnosticada com fístula arteriovenosa dural (DAVF) craniana. Qual das seguintes afirmações está correta sobre essa condição?",
-        options: [
-          {letter: "a", text: "A drenagem para um seio venoso dural ocorre em menos de 1% dos casos"},
-          {letter: "b", text: "A embolização endovascular não tem papel no tratamento das DAVFs"},
-          {letter: "c", text: "Essas lesões possuem um nídus parenquimatoso e suprimento arterial pial"},
-          {letter: "d", text: "Essas lesões são sempre congênitas"},
-          {letter: "e", text: "Drenagem venosa cortical está associada a maior risco de hemorragia"}
-        ],
-        correct: "e",
-        comment: "As fístulas arteriovenosas durais (DAVF) são lesões adquiridas supridas por artérias meníngeas; a presença de drenagem venosa cortical está associada a um maior risco de hemorragia. (Gandhi D, et al. Am J Neuroradiol. 2012;33:1007–1013.)"
-      },
-      {
-        id: 69,
-        question: "69. Um homem de 62 anos apresenta início agudo de hemiparesia direita e afasia global. Ele foi visto normal há 1 hora. O NIHSS é 20. A TC não mostra hemorragia e é iniciado tPA IV. Em seguida, a angio-TC demonstra oclusão do segmento proximal da ACM esquerda. Qual das seguintes opções é correta sobre a trombectomia endovascular nesse paciente?",
-        options: [
-          {letter: "a", text: "A trombectomia endovascular é contraindicada após o tPA IV"},
-          {letter: "b", text: "A trombectomia endovascular é indicada e associada a melhores desfechos clínicos"},
-          {letter: "c", text: "Deve-se aguardar para verificar melhora com tPA IV antes de realizar trombectomia"},
-          {letter: "d", text: "A trombectomia endovascular não demonstrou benefício nos desfechos clínicos"},
-          {letter: "e", text: "É obrigatória a realização de TC de perfusão ou RM de perfusão para indicar trombectomia endovascular"}
-        ],
-        correct: "b",
-        comment: "Estudos recentes (MR CLEAN, ESCAPE, etc.) demonstraram que a trombectomia endovascular é benéfica em AVCs com oclusão de grandes vasos, quando realizada dentro de 6 horas do início dos sintomas. (Powers WJ, et al. Stroke. 2015.)"
-      },
-      {
-        id: 70,
-        question: "70. Uma mulher de 69 anos com histórico de hipertensão e diabetes apresentou AIT e foi diagnosticada com fibrilação atrial. Ela recusou varfarina, mas deseja iniciar um dos anticoagulantes orais não antagonistas da vitamina K. Sobre esses agentes, qual das seguintes afirmações está correta?",
-        options: [
-          {letter: "a", text: "O dabigatrano é eliminado pelo fígado e não requer ajustes em insuficiência renal"},
-          {letter: "b", text: "O apixabano é um inibidor do fator Xa que demonstrou menor risco de hemorragia intracraniana em comparação ao varfarina"},
-          {letter: "c", text: "O rivaroxabano é um inibidor direto da trombina administrado duas vezes ao dia"},
-          {letter: "d", text: "O dabigatrano tem meia-vida muito curta (<10 horas) e alta biodisponibilidade oral"},
-          {letter: "e", text: "Inibidores diretos da trombina e do fator Xa exigem monitorização rotineira com INR entre 2 e 3"}
-        ],
-        correct: "b",
-        comment: "Anticoagulantes orais não antagonistas da vitamina K (NOACs), como o Apixabano, demonstraram taxas mais baixas de hemorragia intracraniana em comparação à varfarina e não requerem monitoramento rotineiro do INR. (Pollack CV, et al. N Engl J Med. 2015.)"
-      },
-      {
-        id: 71,
-        question: "71. Um homem de 50 anos com histórico de múltiplos AVCs isquêmicos recorrentes faz uma angiografia cerebral que demonstra áreas de estreitamento e dilatação bilateral. Considera-se o diagnóstico de vasculite do SNC. Qual das seguintes afirmações está correta sobre a vasculite do SNC?",
-        options: [
-          {letter: "a", text: "A análise de líquor (LCR) não é necessária e não deve ser feita em todos os casos suspeitos"},
-          {letter: "b", text: "A angiografia cerebral tem alta especificidade e é o padrão-ouro diagnóstico"},
-          {letter: "c", text: "O diagnóstico definitivo requer evidência de inflamação da parede vascular em biópsia cerebral"},
-          {letter: "d", text: "A biópsia cerebral tem alta sensibilidade para essa doença"},
-          {letter: "e", text: "Cefaleia em 'trovoada' é típica da angiite primária do SNC"}
-        ],
-        correct: "c",
-        comment: "O diagnóstico definitivo de angiite primária do SNC (PACNS) requer confirmação histopatológica da inflamação da parede dos vasos por biópsia cerebral. (John S, Hajj-Ali RA. Semin Neurol. 2014.)"
-      },
-      {
-        id: 72,
-        question: "72. Uma mulher de 40 anos teve início súbito de cefaleia intensa, com pico em segundos, melhorando em algumas horas. Apresentou náuseas e vômitos, mas nenhum outro déficit neurológico. Relatou uso de anfetaminas. A TC mostrou discreta HSA cortical. A angiografia revelou 'aspecto de rosário' em ramos de ACM, ACA e ACP bilateralmente, sem aneurismas ou malformações. O LCR é normal. Três meses depois, ela está bem. Qual das seguintes afirmações está correta sobre essa condição?",
-        options: [
-          {letter: "a", text: "Os achados na angiografia cerebral se normalizam em até 12 semanas"},
-          {letter: "b", text: "Biópsia cerebral está indicada em todos os casos, demonstrando inflamação da parede vascular"},
-          {letter: "c", text: "É sempre benigna, não se associando a AVC ou hemorragia intraparenquimatosa"},
-          {letter: "d", text: "É mais comum em homens do que em mulheres"},
-          {letter: "e", text: "Corticoides são recomendados e melhoram o desfecho"}
-        ],
-        correct: "a",
-        comment: "Esta paciente apresenta síndrome de vasoconstrição cerebral reversível (RCVS), cujos achados angiográficos (padrão em 'contas de rosário') normalmente se resolvem em até 12 semanas. (Ducros A. Lancet Neurol. 2012;11:906–917.)"
-      },
-      {
-        id: 73,
-        question: "73. Qual das seguintes afirmações está correta em relação às terapias de revascularização para estenose carotídea?",
-        options: [
-          {letter: "a", text: "A taxa de AVC a longo prazo é significativamente menor após o stent carotídeo comparado à endarterectomia (CEA)"},
-          {letter: "b", text: "A endarterectomia é o tratamento de escolha em pacientes com estenose carotídea que já passaram por cirurgia e radioterapia de pescoço"},
-          {letter: "c", text: "O risco de AVC periprocedimento é menor com stent carotídeo do que com endarterectomia"},
-          {letter: "d", text: "A endarterectomia é o tratamento de escolha em pacientes com estenose carotídea e oclusão contralateral da carótida"},
-          {letter: "e", text: "A colocação de stent carotídeo está associada a menores taxas de infarto do miocárdio em comparação à endarterectomia"}
-        ],
-        correct: "e",
-        comment: "Em pacientes de alto risco, a angioplastia e stent carotídeo (CAS) podem apresentar taxas mais baixas de infarto do miocárdio em comparação à endarterectomia carotídea (CEA); contudo, os desfechos na prevenção do AVC são semelhantes. (Brott TG, et al. 2011; CREST trial.)"
-      }
-    ];
-    
-    /*****************************************************************
-     * Variáveis de controle da sessão
-     *****************************************************************/
-    let sessionQuestions = []; // Questões selecionadas para a sessão
-    let currentQuestionIndex = 0;
-    
-    /*****************************************************************
-     * Função para iniciar a sessão conforme as configurações escolhidas
-     *****************************************************************/
-    function startSession() {
-      const numQuestions = parseInt(document.getElementById('numQuestions').value);
-      const repeat = document.getElementById('repeat').checked;
-      sessionQuestions = [];
-      
-      if (repeat) {
-        // Seleciona aleatoriamente com reposição
-        for (let i = 0; i < numQuestions; i++) {
-          const randomIndex = Math.floor(Math.random() * questionBank.length);
-          sessionQuestions.push(questionBank[randomIndex]);
+    "use strict";
+    document.addEventListener("DOMContentLoaded", () => {
+      /*****************************************************************
+       * Banco de Questões – Array com 73 questões.
+       * Cada objeto possui: id, question, options, correct, comment.
+       * Os enunciados já utilizam <strong>...</strong> para destacar termos importantes.
+       *****************************************************************/
+      const questionBank = [
+        {
+          id: 1,
+          question: "1. Um paciente de 65 anos com diabetes apresenta um AIT. De acordo com o escore ABCD2, que avalia o risco de AVC em alguém com AIT, qual das seguintes variáveis <strong>não</strong> é utilizada como preditora de ocorrência de um AVC?",
+          options: [
+            {letter: "a", text: "Diabetes"},
+            {letter: "b", text: "Idade igual ou superior a 60 anos"},
+            {letter: "c", text: "Hipertensão"},
+            {letter: "d", text: "Duração dos sintomas neurológicos"},
+            {letter: "e", text: "Hiperlipidemia"}
+          ],
+          correct: "e",
+          comment: "A hiperlipidemia não faz parte do escore ABCD2. A identificação dos fatores de risco que predizem AVC após AIT é fundamental na avaliação dos pacientes. No escore ABCD2, são atribuídos pontos para: idade (60 anos ou mais – 1 ponto); pressão arterial (≥140/90 mm Hg – 1 ponto); sintomas clínicos (1 ponto para alteração da fala sem fraqueza e 2 pontos para fraqueza focal); duração dos sintomas (1 ponto para 10 a 59 minutos e 2 pontos para 60 minutos ou mais); e diabetes (1 ponto). O risco de AVC em 2 dias varia de 0% (escores 0–1) a 8,1% (escores 6–7). (Easton JD, Saver JL, Albers GW, et al. Stroke. 2009;40:2276–2293.)"
+        },
+        {
+          id: 2,
+          question: "2. Uma mulher de 42 anos com diabetes, hipertensão e hiperlipidemia é trazida ao serviço de emergência por “falta de responsividade”. Uma ressonância magnética (MRI) foi obtida e está mostrada na Figura 2.1. Qual das seguintes manifestações provavelmente será encontrada nessa paciente?",
+          options: [
+            {letter: "a", text: "Comprometimento do olhar vertical"},
+            {letter: "b", text: "Sintomas hemissensoriais"},
+            {letter: "c", text: "Hemiparesia"},
+            {letter: "d", text: "Quadriplegia com prejuízo do desvio horizontal do olhar"},
+            {letter: "e", text: "Afasia"}
+          ],
+          correct: "d",
+          comment: "A RM mostrada na Figura 2.1 demonstra restrição à difusão em DWI envolvendo a ponte e o cerebelo. É provável que essa paciente apresente quadriplegia e comprometimento do desvio horizontal dos olhos – achados consistentes com a síndrome 'locked‑in'. Outras manifestações neurológicas não se enquadram no quadro. O comprometimento do olhar vertical é mais comum em lesões do mesencéfalo. (Ropper AH, Samuels MA, Klein JP. Adams and Victor’s Principles of Neurology, 10ª ed.)"
+        },
+        {
+          id: 3,
+          question: "3. Um homem de 49 anos, com histórico de hipertensão, apresenta início agudo de hemiparesia direita e afasia. A última vez em que foi visto normal foi cerca de 45 minutos antes. O escore NIHSS é 14. Qual das seguintes condutas é a <strong>melhor</strong> próxima etapa?",
+          options: [
+            {letter: "a", text: "Iniciar ativador de plasminogênio tecidual (tPA) intravenoso"},
+            {letter: "b", text: "Solicitar uma tomografia de crânio (TC)"},
+            {letter: "c", text: "Administrar aspirina 325 mg em dose única"},
+            {letter: "d", text: "Iniciar heparina intravenosa"},
+            {letter: "e", text: "Realizar uma ressonância magnética (MRI) de crânio"}
+          ],
+          correct: "b",
+          comment: "Deve ser realizada uma TC de crânio antes de iniciar qualquer terapia. A apresentação clínica é compatível com AVC agudo e, se for isquêmico e sem contraindicações, o tPA IV deve ser administrado, pois o paciente está dentro da janela terapêutica. O NIHSS avalia os déficits neurológicos e a TC é essencial para excluir hemorragia. (Tissue plasminogen activator for acute ischemic stroke. N Engl J Med. 1995;333:1581–1587.)"
+        },
+        {
+          id: 4,
+          question: "4. Uma mulher de 49 anos apresenta hemiplegia de início agudo, progredindo para quadriplegia em 2 horas. Ao exame, está acordada, mas incapaz de verbalizar e com aumento das secreções orais. Ela não consegue mover os olhos horizontalmente, mas movimenta-os verticalmente e pisca. Qual das seguintes é a causa <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Infartos talâmicos bilaterais"},
+            {letter: "b", text: "Infarto lateral de bulbo (medular)"},
+            {letter: "c", text: "Oclusão 'top of the basilar'"},
+            {letter: "d", text: "Infarto que afeta a base da ponte de forma bilateral"},
+            {letter: "e", text: "Infarto que afeta a região dorsal do mesencéfalo"}
+          ],
+          correct: "d",
+          comment: "Este paciente apresenta síndrome 'locked‑in', causada por oclusão basilar que resulta em infartos bilaterais na base da ponte, afetando os tratos longos mas preservando o sistema ativador reticular. Assim, o paciente permanece consciente, com a capacidade de piscar e mover os olhos verticalmente, mas é quadriplégico e não consegue falar, com movimentos oculares horizontais comprometidos. (Ropper AH, Samuels MA, Klein JP. Adams and Victor’s Principles of Neurology, 10ª ed.)"
+        },
+        {
+          id: 5,
+          question: "5. Qual das seguintes afirmações está correta em relação à trombose dos seios venosos?",
+          options: [
+            {letter: "a", text: "Diplopia com paralisia do VI nervo craniano é específica para trombose do seio cavernoso"},
+            {letter: "b", text: "Cefaleia está presente em menos de 50% dos casos"},
+            {letter: "c", text: "Aumento da pressão intracraniana é incomum"},
+            {letter: "d", text: "Trombose do seio sagital superior pode produzir infartos venosos talâmicos bilaterais"},
+            {letter: "e", text: "Crises epilépticas são mais comuns em infartos venosos do que em infartos arteriais"}
+          ],
+          correct: "e",
+          comment: "Crises epilépticas ocorrem em aproximadamente 40% dos pacientes com trombose dos seios venosos – uma taxa muito superior à observada em AVCs arteriais. A cefaleia é o sintoma mais frequente (cerca de 90% dos adultos) e a oclusão venosa pode levar a infarto hemorrágico e aumento da pressão intracraniana. (Ropper AH, Samuels MA, Klein JP. Adams and Victor’s Principles of Neurology, 10ª ed.; Stam J. N Engl J Med. 2005;352:1791–1798.)"
+        },
+        {
+          id: 6,
+          question: "6. Um homem de 51 anos apresenta ataxia. Uma RM foi obtida e está mostrada na Figura 2.2. Qual das seguintes consequências provavelmente resultará dessa lesão?",
+          options: [
+            {letter: "a", text: "Vertigem, nistagmo e ptose e miose à direita"},
+            {letter: "b", text: "Comprometimento do olhar vertical"},
+            {letter: "c", text: "Paralisias do terceiro e sexto nervos cranianos à direita"},
+            {letter: "d", text: "Perda hemisensitiva de dor e temperatura do lado esquerdo da face"},
+            {letter: "e", text: "Perda hemisensitiva de dor e temperatura do lado direito do corpo"}
+          ],
+          correct: "a",
+          comment: "Esta RM demonstra restrição à difusão na medula lateral direita e no cerebelo, manifestando-se como a síndrome de Wallenberg. Um infarto lateral da medula (Wallenberg) é causado pela oclusão da PICA e frequentemente associado à oclusão da artéria vertebral, afetando os núcleos vestibulares, o trato trigeminal descendente, o trato espinotalâmico, fibras simpáticas (resultando na síndrome de Horner ipsilateral) e as conexões cerebelares. (Goetz CG. Textbook of Clinical Neurology, 3ª ed.; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 7,
+          question: "7. Um homem de 34 anos apresenta vertigem e dor cervical após andar em uma montanha-russa “muito radical”. O exame mostra anisocoria com ptose discreta à esquerda, nistagmo, redução de sensibilidade na hemiface esquerda e ataxia à esquerda. Qual o melhor exame diagnóstico para investigar a causa dessa condição?",
+          options: [
+            {letter: "a", text: "Ultrassonografia de carótida"},
+            {letter: "b", text: "Doppler transcraniano"},
+            {letter: "c", text: "Ecocardiograma transtorácico com estudo de bolhas"},
+            {letter: "d", text: "Angiografia por cateter das artérias cérvico-cerebrais"},
+            {letter: "e", text: "Angiorressonância (MRA) 'time-of-flight' do polígono de Willis"}
+          ],
+          correct: "d",
+          comment: "Este paciente provavelmente apresenta dissecção da artéria vertebral esquerda, causando síndrome lateral da medula. O sítio mais comum para dissecção vertebral é entre C1 e C2. Embora exames não invasivos (CTA/MRA) sejam úteis, a angiografia por cateter é o padrão-ouro para avaliar dissecções das artérias cervicais. (CADISS trial; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 8,
+          question: "8. Uma mulher de 69 anos apresenta-se ao serviço de emergência com 2 horas e 35 minutos do início de hemiparesia esquerda e heminegligência. O escore NIHSS é 12. A TC de crânio não mostra hemorragia. Qual das seguintes afirmações está correta sobre o tPA intravenoso?",
+          options: [
+            {letter: "a", text: "O risco de hemorragia com tPA é semelhante ao do placebo"},
+            {letter: "b", text: "Administração mais precoce está associada a melhor prognóstico e menor risco de hemorragia"},
+            {letter: "c", text: "Não existe dose máxima"},
+            {letter: "d", text: "O uso de tPA melhora desfechos clínicos apenas em curto prazo, mas não em longo prazo"},
+            {letter: "e", text: "O tPA não deve ser administrado além de 2 horas do início dos sintomas"}
+          ],
+          correct: "b",
+          comment: "O ativador do plasminogênio tecidual (tPA) é um agente trombolítico utilizado no AVC isquêmico agudo. Sua administração precoce está associada a melhores desfechos e menor risco de hemorragia. (NINDS tPA Stroke Study Group; Hacke W, et al. N Engl J Med. 2008;359:1317–1329.)"
+        },
+        {
+          id: 9,
+          question: "9. Uma mulher de 72 anos, com histórico de diabetes, apresenta um distúrbio visual transitório do lado direito. Ao questioná-la, ela relata ter sentido uma redução transitória da visão do olho direito, progredindo do campo visual superior para o inferior, como se uma 'cortina' estivesse descendo. Isso durou cerca de 10 minutos e se resolveu espontaneamente. Qual das seguintes afirmações é correta?",
+          options: [
+            {letter: "a", text: "Essa paciente tem isquemia transitória do córtex occipital esquerdo"},
+            {letter: "b", text: "Um Doppler transcraniano mostrará velocidades aumentadas na artéria basilar"},
+            {letter: "c", text: "A carótida interna (ICA) direita está estenosada por uma placa aterosclerótica"},
+            {letter: "d", text: "A carótida interna (ICA) esquerda está estenosada por uma placa aterosclerótica"},
+            {letter: "e", text: "O exame de fundoscopia demonstrará papiledema"}
+          ],
+          correct: "c",
+          comment: "Esta paciente apresentou cegueira monocular transitória (amaurose fugaz), geralmente causada por estenose aterosclerótica da ICA do mesmo lado – neste caso, a direita. (Goetz CG; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 10,
+          question: "10. Um homem de 40 anos apresenta tinido, perda auditiva unilateral, náuseas, vômitos e vertigem. Ao exame, observa-se nistagmo, ataxia ipsilateral, síndrome de Horner ipsilateral e déficits sensoriais contralaterais em dor e temperatura no braço, tronco e perna. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "AVC na artéria cerebelar ântero-inferior (AICA)"},
+            {letter: "b", text: "AVC na artéria cerebelar póstero-inferior (PICA)"},
+            {letter: "c", text: "Infarto mesencefálico"},
+            {letter: "d", text: "Infarto do lobo occipital"},
+            {letter: "e", text: "Infarto cerebelar superior"}
+          ],
+          correct: "a",
+          comment: "Este paciente apresenta um infarto na distribuição da AICA. Embora o quadro possa ser semelhante ao infarto por PICA, a surdez ipsilateral (devido à lesão da artéria labiríntica) é característica dos infartos por AICA. (Lee H, et al. Stroke. 2002;33:2807–2812.)"
+        },
+        {
+          id: 11,
+          question: "11. Uma mulher de 59 anos apresenta alteração do estado mental. Observa-se restrição à difusão na RM, mostrada na Figura 2.3. Qual é o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Infarto bilateral da artéria coroidal anterior"},
+            {letter: "b", text: "Infarto por oclusão da artéria recorrente de Heubner"},
+            {letter: "c", text: "Infarto por oclusão da artéria de Percheron"},
+            {letter: "d", text: "Infarto por oclusão da artéria pericallosa"},
+            {letter: "e", text: "Trombose do seio sagital superior"}
+          ],
+          correct: "c",
+          comment: "A Figura 2.3 mostra infarto bilateral do tálamo, que ocorre com a oclusão da artéria de Percheron. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 12,
+          question: "12. Uma mulher de 49 anos com ansiedade, depressão, hipertensão e diabetes apresenta déficit sensitivo afetando face, braço, tronco e perna direitos, iniciado na noite anterior. Os sintomas atingiram o pico pela manhã, antes da avaliação. Não há déficits motores ao exame. Qual das seguintes afirmações é correta?",
+          options: [
+            {letter: "a", text: "Nenhuma investigação adicional é necessária; a paciente pode ser liberada do pronto-socorro"},
+            {letter: "b", text: "Dada a ausência de déficit motor, os sintomas provavelmente estão relacionados à ansiedade"},
+            {letter: "c", text: "A localização mais provável da lesão é cortical"},
+            {letter: "d", text: "A etiologia mais provável é cardioembólica"},
+            {letter: "e", text: "A etiologia mais provável é doença de pequenos vasos"}
+          ],
+          correct: "e",
+          comment: "Esta paciente apresenta sintomas puramente sensitivos, típicos de um AVC lacunar (AVC sensitivo puro) decorrente da oclusão de uma pequena artéria penetrante – frequentemente no tálamo – em razão da hipertensão crônica. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 13,
+          question: "13. Um homem de 52 anos, com histórico de hipertensão, apresenta início agudo de hemiparesia esquerda afetando face, braço e perna. Ele reconhece o lado esquerdo do corpo e seus déficits. Seu olhar não está desviado. Qual a localização mais provável da oclusão vascular?",
+          options: [
+            {letter: "a", text: "Tronco da ACM direita antes da bifurcação"},
+            {letter: "b", text: "Ramos lenticuloestriados da ACM direita"},
+            {letter: "c", text: "Divisão superior da ACM direita"},
+            {letter: "d", text: "Artéria cerebral posterior (ACP) direita"},
+            {letter: "e", text: "Divisão inferior da ACM direita"}
+          ],
+          correct: "b",
+          comment: "Este paciente apresenta um quadro lacunar de déficit motor puro, provavelmente devido a um infarto no compartimento posterior da cápsula interna, originado da oclusão dos ramos lenticuloestriados da MCA. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 14,
+          question: "14. Uma mulher de 59 anos, com histórico de fibrilação atrial e hipertensão, apresenta hemiparesia direita que afeta principalmente face e braço. O olhar está desviado para a esquerda. Ela entende os comandos, mas não consegue verbalizar e demonstra frustração. Onde está a localização <strong>mais provável</strong> da oclusão vascular?",
+          options: [
+            {letter: "a", text: "Tronco da ACM esquerda antes da bifurcação"},
+            {letter: "b", text: "Ramos lenticuloestriados da ACM esquerda"},
+            {letter: "c", text: "Divisão superior da ACM esquerda"},
+            {letter: "d", text: "Divisão inferior da ACM esquerda"},
+            {letter: "e", text: "Ramos penetrantes ao nível da ponte"}
+          ],
+          correct: "c",
+          comment: "Esta paciente provavelmente apresenta infarto na distribuição da divisão superior da MCA esquerda, o que causa hemiparesia contralateral (afetando principalmente face e braço) e afasia de Broca. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 15,
+          question: "15. Um homem de 51 anos com hipertensão e diabetes apresenta fraqueza na perna esquerda associada à incontinência urinária. Sabe-se que esse paciente tem um polígono de Willis normal, confirmado em MRA anterior. Qual é a oclusão vascular mais provável?",
+          options: [
+            {letter: "a", text: "Artéria cerebral anterior (ACA) direita proximal à origem da artéria comunicante anterior"},
+            {letter: "b", text: "ACA direita distal à origem da artéria comunicante anterior"},
+            {letter: "c", text: "Artéria comunicante anterior"},
+            {letter: "d", text: "Divisão superior da ACM direita"},
+            {letter: "e", text: "Divisão inferior da ACM direita"}
+          ],
+          correct: "b",
+          comment: "Este paciente apresenta isquemia no território da ACA direita, e a oclusão distal à artéria comunicante geralmente causa déficits sensitivo-motores contralaterais na perna, acompanhados de incontinência urinária. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 16,
+          question: "16. Qual das seguintes afirmações sobre a artéria recorrente de Heubner está correta?",
+          options: [
+            {letter: "a", text: "É um ramo penetrante da ACA"},
+            {letter: "b", text: "É um ramo penetrante da ACP"},
+            {letter: "c", text: "Irriga bilateralmente o tálamo"},
+            {letter: "d", text: "Irriga o braço posterior da cápsula interna"},
+            {letter: "e", text: "Origina-se do tronco principal da ACM"}
+          ],
+          correct: "a",
+          comment: "A ACA irriga a face medial do lobo frontal e emite ramos penetrantes profundos. A artéria recorrente de Heubner é o maior desses ramos, irrigando parte da cápsula interna (porção anterior), a cabeça do caudado e o globo pallidus anterior. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 17,
+          question: "17. Os ramos lenticuloestriados irrigam todas as seguintes estruturas, <strong>exceto</strong>:",
+          options: [
+            {letter: "a", text: "Parte da cabeça e corpo do caudado"},
+            {letter: "b", text: "Braço posterior da cápsula interna"},
+            {letter: "c", text: "Putâmen"},
+            {letter: "d", text: "Parte externa do globo pálido"},
+            {letter: "e", text: "Tálamo"}
+          ],
+          correct: "e",
+          comment: "Os ramos penetrantes profundos (lenticuloestriados) da MCA irrigam o caudado, putâmen, globo pálido e o compartimento posterior da cápsula interna; o tálamo é irrigado por ramos da circulação posterior. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 18,
+          question: "18. Um homem de 31 anos apresenta tontura, vertigem e rouquidão após manipulação cervical por um quiropraxista inexperiente. Ao exame, há nistagmo, achados de síndrome de Horner à direita, paralisia do palato à direita, redução da sensibilidade na hemiface direita e hemicorpo esquerdo, além de ataxia à direita. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Síndrome medular medial direita"},
+            {letter: "b", text: "Síndrome medular lateral direita"},
+            {letter: "c", text: "Síndrome medular medial esquerda"},
+            {letter: "d", text: "Síndrome medular lateral esquerda"},
+            {letter: "e", text: "Infarto pontino direito"}
+          ],
+          correct: "b",
+          comment: "Este paciente apresenta a síndrome de Wallenberg (lateral da medula) decorrente de infarto na PICA direita – o que é compatível com a presença de síndrome de Horner ipsilateral, ataxia e perda sensorial contralateral. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 19,
+          question: "19. Qual das seguintes opções está correta em relação ao suprimento vascular do tálamo?",
+          options: [
+            {letter: "a", text: "É fornecido principalmente pela circulação anterior"},
+            {letter: "b", text: "A artéria coroidal anterior supre o núcleo ventral póstero-medial"},
+            {letter: "c", text: "A artéria coroidal posterior supre o núcleo ventral anterior"},
+            {letter: "d", text: "Os ramos paramedianos suprem o núcleo dorsomedial"},
+            {letter: "e", text: "A artéria coroidal posterior origina-se da artéria comunicante posterior e supre a região lateral do tálamo"}
+          ],
+          correct: "d",
+          comment: "O tálamo é irrigado principalmente pela circulação posterior. Em particular, os ramos paramédianos (tálamo-perfurantes) originados do segmento P1 da PCA irrigam o núcleo dorsomedial. (Carrera E, Bogousslavsky J. Neurology. 2006:1817–1823.)"
+        },
+        {
+          id: 20,
+          question: "20. Um homem de 49 anos apresenta ataxia. Sua TC de crânio está mostrada na Figura 2.4. Qual artéria está <strong>mais provavelmente</strong> envolvida?",
+          options: [
+            {letter: "a", text: "Artéria cerebelar ântero-inferior (AICA)"},
+            {letter: "b", text: "Artéria cerebelar superior (SCA)"},
+            {letter: "c", text: "Artéria cerebelar póstero-inferior (PICA)"},
+            {letter: "d", text: "Artéria cerebral posterior (ACP)"},
+            {letter: "e", text: "Artéria vertebral"}
+          ],
+          correct: "b",
+          comment: "A Figura 2.4 mostra um infarto que afeta principalmente o hemisfério cerebelar superior direito, compatível com um AVC na artéria cerebelar superior (SCA). (Blumenfeld H. 2002.)"
+        },
+        {
+          id: 21,
+          question: "21. Um homem de 42 anos, destra, com diabetes e cardiomiopatia dilatada, desenvolve 'confusão' aguda. Ao exame, não segue comandos e fala fluentemente, mas com frases sem sentido. Apresenta ainda déficit visual no hemicampo direito. A RM mostra evidências de AVC. Onde está a oclusão vascular <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Tronco da ACM esquerda antes da bifurcação"},
+            {letter: "b", text: "Ramos lenticuloestriados da ACM esquerda"},
+            {letter: "c", text: "Divisão superior da ACM esquerda"},
+            {letter: "d", text: "Divisão inferior da ACM esquerda"},
+            {letter: "e", text: "Ramos penetrantes ao nível da ponte"}
+          ],
+          correct: "d",
+          comment: "Este paciente provavelmente apresenta infarto na divisão inferior da MCA, o que causa afasia de Wernicke e déficits visuais no campo contralateral. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 22,
+          question: "22. Que síndrome podemos esperar em um paciente que se apresenta com AVC agudo e a MRA mostrada na Figura 2.5?",
+          options: [
+            {letter: "a", text: "Síndrome de Wallenberg"},
+            {letter: "b", text: "Síndrome de Parinaud"},
+            {letter: "c", text: "Síndrome de ACM esquerda"},
+            {letter: "d", text: "Síndrome de 'locked-in'"},
+            {letter: "e", text: "Síndrome de Dejerine–Roussy"}
+          ],
+          correct: "d",
+          comment: "O achado mais proeminente na Figura 2.5 é a ausência da artéria basilar, provavelmente por oclusão, que pode levar a um infarto pontino com a síndrome 'locked-in'. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 23,
+          question: "23. A RM mostrada na Figura 2.6. Qual das seguintes afirmações está correta sobre esta condição?",
+          options: [
+            {letter: "a", text: "Afasia e negligência são manifestações neurológicas comuns"},
+            {letter: "b", text: "Ecocardiograma transesofágico com estudo de bolhas e Holter são indicados"},
+            {letter: "c", text: "A análise patológica dessa lesão demonstraria micro-hemorragias na área afetada"},
+            {letter: "d", text: "É causada por oclusão de um vaso penetrante e está intimamente relacionada à hipertensão"},
+            {letter: "e", text: "A apresentação mais comum, nesse caso, é de déficits puramente sensitivos"}
+          ],
+          correct: "d",
+          comment: "A RM da Figura 2.6 demonstra uma pequena área de restrição à difusão compatível com um AVC lacunar, causado pela oclusão de um vaso penetrante – um processo intimamente relacionado à hipertensão (lipohialinose) e não a micro-hemorragias. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 24,
+          question: "24. Qual a anormalidade observada na MRA mostrada na Figura 2.7?",
+          options: [
+            {letter: "a", text: "Ausência da artéria vertebral esquerda"},
+            {letter: "b", text: "Oclusão da basilar"},
+            {letter: "c", text: "Oclusão da ACM esquerda"},
+            {letter: "d", text: "Oclusão da carótida interna esquerda"},
+            {letter: "e", text: "Artérias cerebrais posteriores de padrão fetal"}
+          ],
+          correct: "d",
+          comment: "A Figura 2.7 mostra a ausência da ICA esquerda, com a MCA esquerda sendo parcialmente visualizada através do fluxo colateral via artéria comunicante anterior. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 25,
+          question: "25. Qual das seguintes afirmações é <strong>incorreta</strong> sobre a artéria coroidal anterior?",
+          options: [
+            {letter: "a", text: "É um ramo da artéria carótida interna (ICA)"},
+            {letter: "b", text: "Irriga o braço posterior da cápsula interna"},
+            {letter: "c", text: "Irriga o braço anterior da cápsula interna"},
+            {letter: "d", text: "Irriga parte do trato genículo-calcarino"},
+            {letter: "e", text: "Irriga o plexo coróide nos ventrículos laterais"}
+          ],
+          correct: "c",
+          comment: "A artéria coroidal anterior não irriga o compartimento anterior da cápsula interna, que é irrigado pela artéria recorrente de Heubner e pelos ramos profundos da ACA. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 26,
+          question: "26. Uma angiografia cerebral está mostrada na Figura 2.8. Qual a anormalidade vista nessa angiografia?",
+          options: [
+            {letter: "a", text: "Oclusão da ACM esquerda"},
+            {letter: "b", text: "Oclusão da artéria vertebral esquerda"},
+            {letter: "c", text: "Oclusão da ACA no segmento A1"},
+            {letter: "d", text: "Oclusão da ICA esquerda"},
+            {letter: "e", text: "Trata-se de uma angiografia normal"}
+          ],
+          correct: "a",
+          comment: "A Figura 2.8 mostra uma angiografia convencional por cateter que demonstra a oclusão do tronco principal da MCA esquerda, sem preenchimento de contraste distal. (Harrigan MR, Deveikis JP. 2ª ed.; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 27,
+          question: "27. Qual o mecanismo mais provável do AVC mostrado na Figura 2.9?",
+          options: [
+            {letter: "a", text: "Cardioembólico"},
+            {letter: "b", text: "Lacunar"},
+            {letter: "c", text: "Êmbolo de grande artéria com aterosclerose"},
+            {letter: "d", text: "Hipotensão em contexto de estenose carotídea"},
+            {letter: "e", text: "Infarto venoso"}
+          ],
+          correct: "d",
+          comment: "A Figura 2.9 demonstra restrição à difusão em uma região de watershed entre os territórios superficial e profundo da MCA, provavelmente devido à hipotensão em contexto de estenose carotídea. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 28,
+          question: "28. Uma mulher de 39 anos apresenta síndrome de Horner à esquerda, com vertigem, ataxia do braço esquerdo e alterações sensitivas na face esquerda e hemicorpo direito. Qual a causa <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Dissecção da artéria carótida esquerda"},
+            {letter: "b", text: "Dissecção da artéria carótida direita"},
+            {letter: "c", text: "Dissecção da artéria vertebral esquerda"},
+            {letter: "d", text: "Dissecção da artéria vertebral direita"},
+            {letter: "e", text: "AVC em território da ACM direita"}
+          ],
+          correct: "c",
+          comment: "Esta paciente apresenta síndrome de Horner do lado esquerdo com outros sinais que localizam a lesão no tronco encefálico (envolvendo os núcleos trigeminal, vestibular e cerebelar) – quadro que é melhor explicado por uma dissecção da artéria vertebral esquerda. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 29,
+          question: "29. Uma mulher de 52 anos apresenta início agudo de hemiparesia direita. Uma TC de crânio é obtida e mostrada na Figura 2.10. Qual das seguintes afirmações está correta?",
+          options: [
+            {letter: "a", text: "Essa paciente tem risco de vasoespasmo"},
+            {letter: "b", text: "A causa dos sintomas é um AVC lacunar"},
+            {letter: "c", text: "Pode ser necessária craniectomia suboccipital para descompressão"},
+            {letter: "d", text: "A paciente apresenta hemorragia hipertensiva"},
+            {letter: "e", text: "A paciente apresenta oclusão da ACM"}
+          ],
+          correct: "e",
+          comment: "A Figura 2.10 mostra o sinal hiper denso da MCA esquerda, indicando a oclusão da MCA – um sinal com boa especificidade para oclusão ateroembólica. (Jha B, et al. Neurology. 2009;72:e116–e117.)"
+        },
+        {
+          id: 30,
+          question: "30. Um homem de 59 anos, com histórico de diabetes, hipertensão e hiperlipidemia, chega com PA de 60/30 mmHg e confusão mental. Sua creatinoquinase está muito elevada, com fração MB de 12%. Sua troponina está elevada, e o ECG mostra depressões de ST em derivações inferiores. Após estabilização, nota-se fraqueza no lado esquerdo, mais proeminente nos abdutores do ombro e flexores do quadril. Qual o mecanismo mais provável da fraqueza?",
+          options: [
+            {letter: "a", text: "Fraqueza decorrente de miopatia"},
+            {letter: "b", text: "Infarto lacunar na cápsula interna"},
+            {letter: "c", text: "Hipotensão em contexto de estenose da carótida interna esquerda"},
+            {letter: "d", text: "Hipotensão em contexto de estenose da carótida interna direita"},
+            {letter: "e", text: "Evento cardioembólico associado a arritmia"}
+          ],
+          correct: "d",
+          comment: "Dada a hipotensão e o padrão de fraqueza (predominância proximal), o quadro é mais consistente com um infarto de watershed secundário à hipotensão em contexto de estenose carotídea – neste caso, a estenose da carótida interna direita, causando déficits no lado esquerdo. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 31,
+          question: "31. Um homem de 57 anos apresenta início agudo de disartria, paralisia do braço e perna direitos, com preservação da face, e perda da sensibilidade de posição e vibração no lado direito do corpo. Ao exame, nota-se que a língua desvia para a esquerda. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Síndrome medular lateral direita"},
+            {letter: "b", text: "Síndrome medular medial esquerda"},
+            {letter: "c", text: "Síndrome medular medial direita"},
+            {letter: "d", text: "Infarto pontino direito"},
+            {letter: "e", text: "Síndrome medular lateral esquerda"}
+          ],
+          correct: "b",
+          comment: "Este paciente apresenta síndrome medular medial (síndrome de Dejerine) devido à oclusão de um ramo da artéria vertebral, resultando em fraqueza contralateral e perda de propriocepção, com fraqueza da língua ipsilateral. (Goetz CG; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 32,
+          question: "32. Uma mulher de 65 anos foi a um parque de diversões e andou em uma montanha-russa. Cerca de 3 semanas depois, teve um episódio compatível com amaurose fugaz no olho esquerdo. Ela se queixa de cefaleias, sente fraqueza 'em todo o corpo' e refere dor nos ombros há pelo menos 6 meses. Relata também que, ao mastigar, fica cansada e a mandíbula começa a doer. Qual a <strong>melhor</strong> próxima etapa?",
+          options: [
+            {letter: "a", text: "Angiografia cerebral"},
+            {letter: "b", text: "Angiografia por TC de pescoço"},
+            {letter: "c", text: "Iniciar heparina e depois fazer ponte para varfarina"},
+            {letter: "d", text: "Agendar biópsia da artéria temporal"},
+            {letter: "e", text: "Iniciar corticosteroides"}
+          ],
+          correct: "e",
+          comment: "Esta paciente apresenta sintomas compatíveis com arterite temporal (arterite de células gigantes) – com cefaleia, claudicação mandibular e amaurose fugaz – que requerem tratamento imediato com corticosteroides para prevenir perda visual permanente. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 33,
+          question: "33. Uma mulher de 49 anos apresenta início agudo de hemiplegia esquerda e fraqueza facial à direita, envolvendo movimentos faciais superiores e inferiores. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Infarto pontino direito"},
+            {letter: "b", text: "Infarto pontino esquerdo"},
+            {letter: "c", text: "Infarto mesencefálico direito"},
+            {letter: "d", text: "Infarto mesencefálico esquerdo"},
+            {letter: "e", text: "Infarto em território da ACM direita"}
+          ],
+          correct: "a",
+          comment: "Esta paciente apresenta a síndrome de Millard–Gubler, caracterizada por hemiplegia contralateral com paralisia facial ipsilateral, decorrente de uma lesão pontina. (Ropper AH, et al. 10ª ed.; Silverman IE, et al. Arch Neurol. 1995;52:635–638.)"
+        },
+        {
+          id: 34,
+          question: "34. Uma mulher de 42 anos apresenta cefaleias e é encontrada com um aneurisma na bifurcação da ACM esquerda. Ela questiona sobre riscos. Qual das seguintes afirmações <strong>não</strong> é correta?",
+          options: [
+            {letter: "a", text: "Pacientes com aneurisma previamente rompido têm maior risco de HSA (hemorragia subaracnóidea)"},
+            {letter: "b", text: "Tabagismo é fator de risco para ruptura de aneurisma"},
+            {letter: "c", text: "Aneurismas na circulação anterior têm maior risco de ruptura em comparação aos da circulação posterior"},
+            {letter: "d", text: "A idade do paciente deve ser considerada na formulação da estratégia de manejo"},
+            {letter: "e", text: "Hipertensão descontrolada pode ser um fator de risco para ruptura de aneurisma"}
+          ],
+          correct: "c",
+          comment: "Os aneurismas da circulação anterior geralmente apresentam menor risco de ruptura em comparação com os da circulação posterior. (Brisman JL, et al. N Engl J Med. 2006;355:928–939.)"
+        },
+        {
+          id: 35,
+          question: "35. Um homem de 59 anos, destro, apresenta déficits neurológicos. Uma TC de crânio foi obtida e está mostrada na Figura 2.11. Qual das seguintes manifestações <strong>não</strong> seria esperada como resultado dessa lesão?",
+          options: [
+            {letter: "a", text: "Hemianopsia homônima direita"},
+            {letter: "b", text: "Anomia"},
+            {letter: "c", text: "Alexia"},
+            {letter: "d", text: "Agnosia visual"},
+            {letter: "e", text: "Afasia expressiva"}
+          ],
+          correct: "e",
+          comment: "Um infarto occipital esquerdo, no território da PCA, tipicamente causa hemianopsia homônima, alexia sem agrafia (quando o esplênio está envolvido), anomia e agnosia visual; entretanto, a afasia expressiva (de Broca) não é esperada. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 36,
+          question: "36. Uma mulher de 52 anos, diabética, chega ao consultório com início súbito de diplopia vertical, dificuldade de adução e de movimentos verticais do olho direito. Ela também tem tremor e movimentos do tipo coreoatetose no lado esquerdo do corpo. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Infarto no tegmento mesencefálico ventral à direita"},
+            {letter: "b", text: "Infarto no tegmento mesencefálico ventral à esquerda"},
+            {letter: "c", text: "Infarto pontino direito"},
+            {letter: "d", text: "Infarto pontino esquerdo"},
+            {letter: "e", text: "Infarto da placa quadrigêmea"}
+          ],
+          correct: "a",
+          comment: "Este paciente apresenta infarto na porção ventral do tegmento mesencefálico direito, envolvendo o núcleo vermelho e os feixes do terceiro nervo, que resultam em paralisia do terceiro nervo ipsilateral com movimentos involuntários contralaterais (síndrome de Benedikt). (Daroff RB, et al. 6ª ed.)"
+        },
+        {
+          id: 37,
+          question: "37. Um paciente destro apresenta início agudo de déficits neurológicos, e a RM de encéfalo está mostrada na Figura 2.12. Qual das seguintes manifestações pode ser observada neste paciente?",
+          options: [
+            {letter: "a", text: "Negligência do lado esquerdo do corpo"},
+            {letter: "b", text: "Desvio do olhar para a direita"},
+            {letter: "c", text: "Afasia global"},
+            {letter: "d", text: "Paresia da perna direita mais do que da face e braço"},
+            {letter: "e", text: "Hemianopsia homônima esquerda"}
+          ],
+          correct: "c",
+          comment: "Este paciente apresenta infarto na distribuição da MCA esquerda (hemisfério dominante) e, consequentemente, manifesta afasia global, hemiparesia contralateral (afetando face, braço e perna) e hemianopsia homônima direita. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 38,
+          question: "38. Qual dos seguintes pacientes deve ser manejado com agentes antiplaquetários para prevenção de AVC?",
+          options: [
+            {letter: "a", text: "Homem de 50 anos que teve um IAM com supradesnivelamento de ST há uma semana, com fração de ejeção de 30% e trombo no ventrículo esquerdo"},
+            {letter: "b", text: "Mulher de 49 anos com válvula cardíaca mecânica"},
+            {letter: "c", text: "Homem de 52 anos com hipertireoidismo e estenose aterosclerótica intracraniana"},
+            {letter: "d", text: "Homem de 76 anos com fibrilação atrial, diabetes, hipertensão e insuficiência cardíaca"},
+            {letter: "e", text: "Homem de 70 anos com trombo intracardíaco"}
+          ],
+          correct: "c",
+          comment: "Um homem de 52 anos com hipertireoidismo e estenose aterosclerótica intracraniana deve ser manejado com agentes antiplaquetários, diferentemente dos pacientes com fontes cardioembólicas, que exigem anticoagulação. (WASID trial; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 39,
+          question: "39. Um homem de 49 anos, destro, com histórico de fibrilação atrial e hipertensão, apresenta início agudo de hemiparesia direita afetando face, braço e perna. Seu olhar está desviado para a esquerda, com hemianopsia homônima direita e afasia global. Qual a localização da oclusão vascular?",
+          options: [
+            {letter: "a", text: "Tronco da ACM esquerda antes da bifurcação"},
+            {letter: "b", text: "Ramos lenticuloestriados da ACM esquerda"},
+            {letter: "c", text: "Divisão inferior da ACM esquerda"},
+            {letter: "d", text: "Ramos penetrantes ao nível da ponte"},
+            {letter: "e", text: "Divisão superior da ACM esquerda"}
+          ],
+          correct: "a",
+          comment: "Este paciente apresenta oclusão do tronco da MCA esquerda, antes da bifurcação, afetando estruturas corticais e subcorticais – o que explica a afasia global, hemiplegia e o defeito visual. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 40,
+          question: "40. Qual das seguintes é <strong>incorreta</strong> sobre a circulação intracraniana?",
+          options: [
+            {letter: "a", text: "A ACA e a ACM surgem da carótida interna (ICA)"},
+            {letter: "b", text: "As artérias cerebrais posteriores (ACP) são ramos da artéria basilar"},
+            {letter: "c", text: "A artéria pericallosa origina-se da circulação anterior"},
+            {letter: "d", text: "Os ramos lenticuloestriados originam-se da ACP"},
+            {letter: "e", text: "A artéria recorrente de Heubner origina-se da ACA"}
+          ],
+          correct: "d",
+          comment: "Os ramos lenticuloestriados originam-se do tronco da MCA, antes da bifurcação, e não da ACP. (Blumenfeld H; Morris P. Practical Neuroangiography.)"
+        },
+        {
+          id: 41,
+          question: "41. Um homem de 50 anos com hipertensão controlada apresenta histórico de AIT há cerca de um mês. Foi iniciada aspirina 81 mg. A investigação de fonte cardioembólica foi negativa, o ultrassom de carótidas mostrou estenose não significativa e o LDL estava em 140 mg/dL. Qual dos seguintes agentes demonstrou prevenir eventos cerebrovasculares recorrentes e deve ser utilizado nesse paciente?",
+          options: [
+            {letter: "a", text: "Inibidores da HMG-CoA redutase (estatinas)"},
+            {letter: "b", text: "Varfarina"},
+            {letter: "c", text: "Ativador de plasminogênio tecidual (tPA)"},
+            {letter: "d", text: "Heparina"},
+            {letter: "e", text: "Terapia de reposição hormonal"}
+          ],
+          correct: "a",
+          comment: "Estudos demonstram que as estatinas reduzem o risco de eventos cerebrovasculares recorrentes em pacientes com AIT ou AVC. (SPARCL trial; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 42,
+          question: "42. Um paciente apresenta limitação do olhar para cima bilateralmente, nistagmo na convergência e desvio vertical (skew deviation). As pupilas estão fixas, com alteração de acomodação e dissociação entre a resposta à luz e ao foco próximo (light-near dissociation). Onde está localizada a lesão?",
+          options: [
+            {letter: "a", text: "Parte ventral do mesencéfalo"},
+            {letter: "b", text: "Ponte"},
+            {letter: "c", text: "Bulbo (medula)"},
+            {letter: "d", text: "Tálamos bilaterais"},
+            {letter: "e", text: "Placa quadrigêmea (região dorsal do mesencéfalo, próxima aos colículos)"}
+          ],
+          correct: "e",
+          comment: "Este paciente apresenta síndrome de Parinaud, caracterizada por paralisia supranuclear do olhar, nistagmo de convergência-retração, dissociação light-near e desvio vertical; a lesão está localizada no mesencéfalo dorsal, na região da placa quadrigêmea. (Goetz CG; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 43,
+          question: "43. Uma mulher de 53 anos, que passou por cirurgia de revascularização do miocárdio há 5 dias, desenvolve início agudo de hemiparesia direita e afasia. A TC de crânio, feita 30 minutos após o início dos sintomas, não mostra hemorragia nem evidências de AVC isquêmico agudo. A pressão arterial está em 170/100 mmHg e a glicemia é de 48 mg/dL. O NIHSS inicial era 16, mas após correção da hipoglicemia caiu para 3. Decide-se não administrar tPA IV. Qual das seguintes <strong>não</strong> é uma contraindicação para essa terapia?",
+          options: [
+            {letter: "a", text: "Cirurgia de grande porte nos últimos 14 dias"},
+            {letter: "b", text: "Crise epiléptica no início do evento"},
+            {letter: "c", text: "Sintomas rapidamente melhorando ou déficit de intensidade mínima"},
+            {letter: "d", text: "Glicose menor que 50 mg/dL"},
+            {letter: "e", text: "TC de crânio sem evidência de infarto agudo"}
+          ],
+          correct: "e",
+          comment: "Uma TC de crânio normal (sem evidência de infarto agudo) não é uma contraindicação para o tPA IV; as contraindicações incluem melhora rápida dos sintomas, hipoglicemia, cirurgia recente e crises epilépticas, mas uma TC normal é necessária para excluir hemorragia. (Jauch EC, et al. Stroke. 2013.)"
+        },
+        {
+          id: 44,
+          question: "44. Um homem de 50 anos com histórico de AVC em território da ACM direita apresenta estenose grave da ACM direita na MRA. Qual das seguintes opções tem evidência para uso terapêutico inicial?",
+          options: [
+            {letter: "a", text: "Bypass cirúrgico"},
+            {letter: "b", text: "Angioplastia"},
+            {letter: "c", text: "Colocação de stent"},
+            {letter: "d", text: "Varfarina"},
+            {letter: "e", text: "Aspirina e clopidogrel"}
+          ],
+          correct: "e",
+          comment: "Para pacientes com estenose aterosclerótica intracraniana sintomática, a terapia médica ótima – com aspirina, modificação dos fatores de risco e, em alguns casos, terapia dupla antiplaquetária – é recomendada em vez de procedimentos invasivos. (SAMMPRIS trial; Chimowitz MI, et al. 2011.)"
+        },
+        {
+          id: 45,
+          question: "45. Um homem de 59 anos apresenta início súbito de hemiparesia direita e afasia. O NIHSS é 18. É obtida uma TC e calculado o ASPECTS. Qual das seguintes afirmações é correta?",
+          options: [
+            {letter: "a", text: "Um escore de 3 favorece o uso de tPA IV"},
+            {letter: "b", text: "São necessários três cortes de TC para calcular esse escore"},
+            {letter: "c", text: "O escore máximo é 20"},
+            {letter: "d", text: "Um escore de 7 ou menos está associado a maior dependência e mortalidade"},
+            {letter: "e", text: "O escore mínimo é 3"}
+          ],
+          correct: "d",
+          comment: "O ASPECTS (Alberta Stroke Program Early CT Score) é utilizado para avaliar alterações isquêmicas precoces na TC; um escore de 7 ou menos correlaciona-se com piores desfechos e maior mortalidade. (Pexman JH, et al. Am J Neuroradiol. 2001.)"
+        },
+        {
+          id: 46,
+          question: "46. Qual das seguintes é <strong>incorreta</strong> sobre a artéria carótida interna (ICA)?",
+          options: [
+            {letter: "a", text: "O segmento cervical se estende desde a bifurcação até o canal carotídeo e não possui ramos"},
+            {letter: "b", text: "O segmento petroso localiza-se na região petrosa do osso temporal"},
+            {letter: "c", text: "A artéria oftálmica origina-se do segmento oftálmico"},
+            {letter: "d", text: "O segmento cavernoso percorre o seio cavernoso"},
+            {letter: "e", text: "A artéria coroidal anterior origina-se do segmento petroso"}
+          ],
+          correct: "e",
+          comment: "A artéria coroidal anterior origina-se do segmento supraclinoide (comunicante) da ICA, e não do segmento petroso. (Blumenfeld H; Bouthillier A, et al. 1996.)"
+        },
+        {
+          id: 47,
+          question: "47. Uma mulher de 69 anos, com histórico de AVC hemisférico direito, hipertensão, hiperlipidemia e diabetes, apresenta novos sintomas de dormência do lado esquerdo. O ultrassom de carótidas está sendo solicitado para avaliar a indicação de endarterectomia. Qual das seguintes afirmações está correta?",
+          options: [
+            {letter: "a", text: "Uma estenose de carótida direita > 70% deve ser tratada clinicamente neste caso"},
+            {letter: "b", text: "Uma estenose de carótida esquerda < 50% deve ser tratada cirurgicamente"},
+            {letter: "c", text: "Recomenda-se tratamento cirúrgico se houver oclusão da carótida direita"},
+            {letter: "d", text: "Uma estenose de carótida direita < 50% se beneficia de tratamento cirúrgico"},
+            {letter: "e", text: "A endarterectomia para estenose carotídea sintomática de 50% a 69% é menos benéfica em mulheres do que em homens"}
+          ],
+          correct: "e",
+          comment: "Em estenose carotídea sintomática, estudos (por exemplo, NASCET) demonstram que os benefícios da endarterectomia são menos pronunciados em mulheres com estenose entre 50% e 69%. (North American Symptomatic Carotid Endarterectomy Trial.)"
+        },
+        {
+          id: 48,
+          question: "48. Um homem de 61 anos, com histórico de diabetes, hiperlipidemia e hipertensão, apresenta hemiparesia esquerda sem comprometimento da fala. Os sintomas se resolvem enquanto ele é avaliado. Qual das seguintes afirmativas é correta?",
+          options: [
+            {letter: "a", text: "O paciente deve receber alta e nenhuma investigação adicional é necessária"},
+            {letter: "b", text: "O paciente pode receber alta com retorno em 3 meses; não é necessária mudança terapêutica"},
+            {letter: "c", text: "Deve-se observar antes de iniciar trombólise, para confirmar se se trata de AIT e não de AVC"},
+            {letter: "d", text: "Não é necessário solicitar RM, pois os sintomas se resolveram"},
+            {letter: "e", text: "O risco de AVC é mais alto no período imediatamente subsequente a um AIT"}
+          ],
+          correct: "e",
+          comment: "Pacientes com AIT têm alto risco de AVC subsequente, especialmente nas primeiras 48 horas até 3 meses, sendo necessária avaliação urgente e modificação dos fatores de risco. (Easton JD, et al. Stroke. 2009;40:2276–2293.)"
+        },
+        {
+          id: 49,
+          question: "49. Um homem de 60 anos apresenta déficits neurológicos agudos. Sua TC de crânio está mostrada na Figura 2.13. Qual a etiologia <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Angiopatia amiloide"},
+            {letter: "b", text: "Aneurisma intracraniano"},
+            {letter: "c", text: "Anticoagulação"},
+            {letter: "d", text: "Hipertensão"},
+            {letter: "e", text: "Trombose de seio venoso"}
+          ],
+          correct: "d",
+          comment: "A Figura 2.13 mostra uma hemorragia intracerebral profunda, provavelmente decorrente de hipertensão, que é a causa mais comum de HIC espontâneo. (Manno EM, et al. Mayo Clin Proc. 2005;80:420–433.)"
+        },
+        {
+          id: 50,
+          question: "50. Uma garota de 14 anos chega para avaliação com diagnóstico presuntivo de Moyamoya. Qual das seguintes afirmações é <strong>incorreta</strong> sobre essa condição?",
+          options: [
+            {letter: "a", text: "Há estenose bilateral das artérias carótidas internas intracranianas e de outros ramos do círculo de Willis"},
+            {letter: "b", text: "Observa-se extensa circulação colateral na angiografia, parecendo uma 'nuvem de fumaça'"},
+            {letter: "c", text: "Afeta predominantemente crianças e adolescentes"},
+            {letter: "d", text: "Podem ocorrer isquemia cerebral e hemorragia"},
+            {letter: "e", text: "A anticoagulação demonstrou benefício comprovado nesses pacientes"}
+          ],
+          correct: "e",
+          comment: "Na doença de Moyamoya, a anticoagulação não é recomendada devido ao alto risco hemorrágico; o tratamento é normalmente a revascularização cirúrgica. (Daroff RB, et al. 6ª ed.; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 51,
+          question: "51. Um homem de 82 anos apresenta hemorragia intracraniana envolvendo todo o lobo temporal esquerdo. Ele possui histórico de três HIC anteriores. Uma RM obtida alguns anos atrás para avaliação de demência, antes da hemorragia atual, está mostrada na Figura 2.14. Qual o diagnóstico e causa <strong>mais provável</strong> de sua hemorragia atual?",
+          options: [
+            {letter: "a", text: "Angiopatia amiloide"},
+            {letter: "b", text: "Aneurisma intracraniano"},
+            {letter: "c", text: "Anticoagulação"},
+            {letter: "d", text: "Hipertensão"},
+            {letter: "e", text: "Trombose de seio venoso"}
+          ],
+          correct: "a",
+          comment: "A hemorragia lobar com episódios hemorrágicos múltiplos e idade avançada é mais compatível com angiopatia amiloide. (Ropper AH, et al. 10ª ed.; Daroff RB, et al. 6ª ed.)"
+        },
+        {
+          id: 52,
+          question: "52. Uma mulher de 49 anos sofre um AVC isquêmico agudo com perda sensitiva significativa em todo o hemicorpo esquerdo. Cerca de 3 semanas depois, ela retorna reclamando de sensação dolorosa intensa ao toque leve e dor em queimação profunda na mesma região. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Infarto medular"},
+            {letter: "b", text: "Infarto mesencefálico"},
+            {letter: "c", text: "Infarto de caudado"},
+            {letter: "d", text: "Infarto pontino"},
+            {letter: "e", text: "Infarto talâmico"}
+          ],
+          correct: "e",
+          comment: "Esta paciente apresenta a síndrome de Dejerine–Roussy, que ocorre após um infarto talâmico, levando a perda sensorial intensa, frequentemente dolorosa, com disestesia. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 53,
+          question: "53. Qual das seguintes afirmações é <strong>incorreta</strong> sobre a circulação posterior?",
+          options: [
+            {letter: "a", text: "As artérias coroides posteriores têm origem na circulação posterior"},
+            {letter: "b", text: "As artérias coroides anteriores têm origem na circulação posterior"},
+            {letter: "c", text: "A artéria espinal anterior origina-se das artérias vertebrais"},
+            {letter: "d", text: "A artéria cerebelar póstero-inferior (PICA) origina-se das artérias vertebrais"},
+            {letter: "e", text: "Um segmento da artéria vertebral percorre os forames transversos entre C5–C6 e C2"}
+          ],
+          correct: "b",
+          comment: "As artérias coroides anteriores originam-se da ICA (circulação anterior), não da circulação posterior; portanto, a afirmação (b) está incorreta em relação à circulação posterior. (Blumenfeld H, 2002.)"
+        },
+        {
+          id: 54,
+          question: "54. Uma mulher de 29 anos, fumante, que faz uso de contraceptivos orais, com histórico de anticorpos antifosfolípides e uma infecção recente não tratada no ouvido médio esquerdo, desenvolveu cefaleia e hemiparesia à direita, progredindo para coma. Uma RM é obtida e mostrada na Figura 2.15. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Hemorragia hipertensiva"},
+            {letter: "b", text: "AVC em território da ACP com transformação hemorrágica"},
+            {letter: "c", text: "Hemorragia associada à angiopatia amiloide"},
+            {letter: "d", text: "Infarto venoso com hemorragia"},
+            {letter: "e", text: "Hemorragia subaracnóidea (HSA)"}
+          ],
+          correct: "d",
+          comment: "Com base na história, fatores de risco e achados na RM, esta paciente provavelmente apresenta um infarto hemorrágico devido à trombose dos seios venosos (neste caso, do seio transverso esquerdo) e não uma hemorragia arterial. (Stam J, N Engl J Med. 2005;352:1791–1798.)"
+        },
+        {
+          id: 55,
+          question: "55. Uma mulher de 49 anos, hipertensa sem uso de medicação, apresenta um AIT sugestivo de isquemia no território da ACM direita. Os exames mostram 70% de estenose na ACM direita. Qual a <strong>melhor</strong> opção terapêutica para essa paciente?",
+          options: [
+            {letter: "a", text: "Iniciar aspirina"},
+            {letter: "b", text: "Iniciar varfarina"},
+            {letter: "c", text: "Angioplastia intracraniana isolada"},
+            {letter: "d", text: "Angioplastia intracraniana com stent"},
+            {letter: "e", text: "Cirurgia de bypass extracraniano/intracraniano (EC/IC)"}
+          ],
+          correct: "a",
+          comment: "Para pacientes com AIT ou AVC decorrentes de estenose aterosclerótica intracraniana, a terapia médica ótima – com aspirina, modificação dos fatores de risco (controle da pressão arterial, LDL, glicemia) e, às vezes, terapia antiplaquetária dupla – é recomendada. (WASID trial; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 56,
+          question: "56. Um homem de 61 anos apresenta início agudo de diplopia e dificuldade de usar a mão direita. Ao exame, há paralisia do terceiro nervo craniano à esquerda, tremor e ataxia do lado direito, mas sem movimentos coreoatetósicos. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Infarto hemisférico esquerdo"},
+            {letter: "b", text: "Infarto pontino esquerdo"},
+            {letter: "c", text: "Infarto mesencefálico esquerdo"},
+            {letter: "d", text: "Infarto pontino direito"},
+            {letter: "e", text: "Infarto mesencefálico direito"}
+          ],
+          correct: "c",
+          comment: "Este paciente apresenta a síndrome de Claude, caracterizada por paralisia do terceiro nervo craniano ipsilateral com ataxia e tremor contralaterais, devido a um infarto no tegmento mesencefálico. (Daroff RB, et al. 6ª ed.)"
+        },
+        {
+          id: 57,
+          question: "57. Um homem de 34 anos apresenta vertigem e dor cervical após manipulação cervical por um quiropraxista inexperiente. A RM mostra perda de sinal no seio transverso esquerdo. Qual das seguintes afirmações é correta sobre essa condição?",
+          options: [
+            {letter: "a", text: "Ecocardiograma com bolhas é indicado"},
+            {letter: "b", text: "Devido à hipertensão, não há necessidade de investigar causas pró-trombóticas"},
+            {letter: "c", text: "A infecção do ouvido médio não é um fator etiológico"},
+            {letter: "d", text: "A anticoagulação é contraindicada"},
+            {letter: "e", text: "O tratamento com anticoagulação é indicado"}
+          ],
+          correct: "c",
+          comment: "Este paciente apresenta trombose do seio transverso esquerdo. Em casos de trombose dos seios venosos, é importante investigar fatores pró-trombóticos – e, neste caso, a infecção do ouvido médio é um fator etiológico conhecido. (Stam J, N Engl J Med. 2005;352:1791–1798.)"
+        },
+        {
+          id: 58,
+          question: "58. Um homem de 67 anos, com histórico de fibrilação atrial e AIT recente, apresenta-se para avaliação. Decide-se iniciar varfarina. Qual dos seguintes fatores <strong>não</strong> é rotineiramente considerado na avaliação do risco de AVC em pacientes com fibrilação atrial?",
+          options: [
+            {letter: "a", text: "Histórico de diabetes mellitus"},
+            {letter: "b", text: "Histórico de insuficiência cardíaca congestiva"},
+            {letter: "c", text: "Histórico de hipertensão"},
+            {letter: "d", text: "Histórico de AVC ou AIT"},
+            {letter: "e", text: "Histórico de hiperlipidemia"}
+          ],
+          correct: "e",
+          comment: "A hiperlipidemia não está incluída nas pontuações de estratificação de risco (CHADS2/CHA2DS2-VASc) para fibrilação atrial. (Meschia JF, et al. Stroke. 2014.)"
+        },
+        {
+          id: 59,
+          question: "59. Qual das seguintes é <strong>incorreta</strong> sobre o sistema venoso?",
+          options: [
+            {letter: "a", text: "Veias do couro cabeludo comunicam-se com seios venosos durais por meio de veias emissárias"},
+            {letter: "b", text: "A veia oftálmica drena para o seio cavernoso"},
+            {letter: "c", text: "O seio cavernoso drena para os seios petrosos superior e inferior"},
+            {letter: "d", text: "A veia de Labbé é a veia anastomótica superior"},
+            {letter: "e", text: "A veia de Rosenthal é uma veia profunda"}
+          ],
+          correct: "d",
+          comment: "A veia de Labbe não é a veia anastomótica superior, mas sim a veia anastomótica inferior. (Harrigan MR, Deveikis JP. 2ª ed.)"
+        },
+        {
+          id: 60,
+          question: "60. Um homem de 52 anos, com histórico de enxaquecas e vários 'mini-AVCs', em uso de aspirina, apresenta um novo AVC puramente motor. A RM mostra múltiplos lacunes subcorticais e alterações difusas da substância branca. A investigação de rotina é negativa, e ele não tem diabetes, hipertensão ou dislipidemia. Após alta, retorna cerca de 3 anos depois com quadro de demência. Sua esposa relata que três irmãos também tiveram AVCs em idades jovens e que seu pai teve AVCs e desenvolveu demência precocemente. O paciente falece e, na autópsia, o estudo histopatológico do cérebro está mostrado na Figura 2.17. Qual das seguintes afirmações é correta sobre essa condição?",
+          options: [
+            {letter: "a", text: "É uma doença autossômica recessiva"},
+            {letter: "b", text: "Parkinsonismo é uma característica clássica"},
+            {letter: "c", text: "É associada à mutação do NOTCH3"},
+            {letter: "d", text: "É um transtorno ligado ao cromossomo X"},
+            {letter: "e", text: "Enxaquecas não estão associadas a essa condição"}
+          ],
+          correct: "c",
+          comment: "Este paciente apresenta CADASIL – arteriopatia cerebral autossômica dominante com infartos subcorticais e leucoencefalopatia – que está associada à mutação do gene NOTCH3. (Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 61,
+          question: "61. Um homem de 45 anos sofre um IAM com supradesnivelamento e é submetido à angioplastia transluminal percutânea com stent na artéria descendente anterior esquerda. Posteriormente, desenvolve hemiplegia direita e diplopia, pior ao olhar para cima e para a direita, com limitação de adução e movimentos para cima do olho esquerdo. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Infarto pontino direito"},
+            {letter: "b", text: "Infarto mesencefálico esquerdo"},
+            {letter: "c", text: "Infarto pontino esquerdo"},
+            {letter: "d", text: "Infarto mesencefálico direito"},
+            {letter: "e", text: "Infarto da cápsula interna esquerda"}
+          ],
+          correct: "b",
+          comment: "Este paciente apresenta a síndrome de Weber, caracterizada por paralisia do terceiro nervo craniano ipsilateral e hemiplegia contralateral, devido a um infarto no mesencéfalo. (Daroff RB, et al. 6ª ed.; Goetz CG, 3ª ed.)"
+        },
+        {
+          id: 62,
+          question: "62. Uma RM de encéfalo está mostrada na Figura 2.18. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Malformação arteriovenosa (MAV)"},
+            {letter: "b", text: "Malformação cavernosa"},
+            {letter: "c", text: "Fístula arteriovenosa dural (DAVF)"},
+            {letter: "d", text: "Angioma venoso"},
+            {letter: "e", text: "Telangiectasia capilar"}
+          ],
+          correct: "b",
+          comment: "A aparência na RM, com uma lesão 'tipo pipoca' e anel de hemosiderina, é característica de uma malformação cavernosa. (Prayson RA, Goldblum Jr.; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 63,
+          question: "63. Qual das seguintes é <strong>incorreta</strong> sobre a circulação arterial cérvico-cerebral?",
+          options: [
+            {letter: "a", text: "A artéria carótida comum esquerda, na maioria das vezes, se origina diretamente do arco aórtico"},
+            {letter: "b", text: "A artéria vertebral esquerda se origina da artéria subclávia esquerda"},
+            {letter: "c", text: "A artéria carótida comum direita se origina do tronco braquiocefálico (inominado)"},
+            {letter: "d", text: "A artéria carótida comum esquerda pode se originar do tronco braquiocefálico em alguns casos"},
+            {letter: "e", text: "A carótida comum geralmente se bifurca em carótida interna e externa ao nível de C7"}
+          ],
+          correct: "e",
+          comment: "A artéria carótida comum normalmente se bifurca ao nível de C4 (próximo ao ângulo da mandíbula), e não em C7. (Blumenfeld H; Ropper AH, et al. 10ª ed.)"
+        },
+        {
+          id: 64,
+          question: "64. Um homem de 52 anos apresenta instabilidade progressiva da marcha e fraqueza dos membros inferiores há 3 meses. Relata que, na semana passada, acordou sem conseguir mover as pernas. Sua RM está mostrada na Figura 2.19. Suspeita-se de uma anomalia vascular. Qual o diagnóstico <strong>mais provável</strong>?",
+          options: [
+            {letter: "a", text: "Hematoma extradural"},
+            {letter: "b", text: "Malformação cavernosa"},
+            {letter: "c", text: "Fístula arteriovenosa dural espinhal"},
+            {letter: "d", text: "Angioma venoso"},
+            {letter: "e", text: "Infarto medular espinhal"}
+          ],
+          correct: "c",
+          comment: "Este paciente apresenta uma fístula arteriovenosa dural espinhal (DAVF), a malformação vascular espinhal mais comum, que tipicamente causa mielopatia progressiva. (Krings T, Geibprasert S. Am J Neuroradiol. 2009;30:639–648.)"
+        },
+        {
+          id: 65,
+          question: "65. Com base nos estudos de imagem na Figura 2.20, qual afirmação é correta?",
+          options: [
+            {letter: "a", text: "Trata-se de um sangramento hiperagudo"},
+            {letter: "b", text: "Não se trata de uma hemorragia"},
+            {letter: "c", text: "É uma hemorragia antiga, provavelmente com mais de 1 mês"},
+            {letter: "d", text: "Trata-se de uma hemorragia com cerca de 1 semana"},
+            {letter: "e", text: "Essa hemorragia ocorreu nas últimas 24 horas"}
+          ],
+          correct: "d",
+          comment: "Com base nas características de sinal da TC e da RM, estima-se que a hemorragia tenha aproximadamente 1 semana de evolução. (Daroff RB, et al. 6ª ed.; Mohr JP, et al. 5ª ed.)"
+        },
+        {
+          id: 66,
+          question: "66. Qual o local <strong>mais comum</strong> de aneurisma sacular intracraniano?",
+          options: [
+            {letter: "a", text: "Topo da artéria basilar"},
+            {letter: "b", text: "Origem da artéria cerebelar póstero-inferior (PICA)"},
+            {letter: "c", text: "Artéria comunicante anterior"},
+            {letter: "d", text: "Bifurcação da artéria cerebral média (ACM)"},
+            {letter: "e", text: "Artéria pericallosa"}
+          ],
+          correct: "c",
+          comment: "Os aneurismas saculares são mais frequentemente localizados na artéria comunicante anterior (≈30%). (Brisman JL, et al. N Engl J Med. 2006;355:928–939.)"
+        },
+        {
+          id: 67,
+          question: "67. Um homem de 56 anos envolveu-se em uma briga e sofreu trauma facial com tijolo. Posteriormente, notou que não conseguia abrir o olho esquerdo, com edema periorbital progressivo, proptose e oftalmoplegia do olho esquerdo. A pressão intraocular está elevada, com redução da acuidade visual. A TC não mostra hemorragia. Qual das seguintes afirmações é correta sobre essa lesão?",
+          options: [
+            {letter: "a", text: "Este paciente apresenta uma fístula carotídeo-cavernosa direta"},
+            {letter: "b", text: "Trata-se de uma malformação arteriovenosa no lobo temporal medial"},
+            {letter: "c", text: "Os sintomas oculares e paralisias de nervos cranianos não melhoram mesmo com tratamento"},
+            {letter: "d", text: "O tratamento cirúrgico aberto é a melhor opção para essa lesão"},
+            {letter: "e", text: "Os ramos alimentadores (feeders) são ramos da artéria carótida externa"}
+          ],
+          correct: "a",
+          comment: "A história clínica e os achados angiográficos são compatíveis com uma fístula carotídeo-cavernosa direta, geralmente pós-traumática, de alto fluxo, que causa os sinais oculares observados. (Ellis JA, et al. Neurosurg Focus. 2012;32:E9.)"
+        },
+        {
+          id: 68,
+          question: "68. Uma mulher de 45 anos apresentou zumbido pulsátil e foi diagnosticada com fístula arteriovenosa dural (DAVF) craniana. Qual das seguintes afirmações está correta sobre essa condição?",
+          options: [
+            {letter: "a", text: "A drenagem para um seio venoso dural ocorre em menos de 1% dos casos"},
+            {letter: "b", text: "A embolização endovascular não tem papel no tratamento das DAVFs"},
+            {letter: "c", text: "Essas lesões possuem um nídus parenquimatoso e suprimento arterial pial"},
+            {letter: "d", text: "Essas lesões são sempre congênitas"},
+            {letter: "e", text: "Drenagem venosa cortical está associada a maior risco de hemorragia"}
+          ],
+          correct: "e",
+          comment: "As fístulas arteriovenosas durais (DAVF) são lesões adquiridas supridas por artérias meníngeas; a presença de drenagem venosa cortical está associada a um maior risco de hemorragia. (Gandhi D, et al. Am J Neuroradiol. 2012;33:1007–1013.)"
+        },
+        {
+          id: 69,
+          question: "69. Um homem de 62 anos apresenta início agudo de hemiparesia direita e afasia global. Ele foi visto normal há 1 hora. O NIHSS é 20. A TC não mostra hemorragia e é iniciado tPA IV. Em seguida, a angio-TC demonstra oclusão do segmento proximal da ACM esquerda. Qual das seguintes opções é correta sobre a trombectomia endovascular nesse paciente?",
+          options: [
+            {letter: "a", text: "A trombectomia endovascular é contraindicada após o tPA IV"},
+            {letter: "b", text: "A trombectomia endovascular é indicada e associada a melhores desfechos clínicos"},
+            {letter: "c", text: "Deve-se aguardar para verificar melhora com tPA IV antes de realizar trombectomia"},
+            {letter: "d", text: "A trombectomia endovascular não demonstrou benefício nos desfechos clínicos"},
+            {letter: "e", text: "É obrigatória a realização de TC de perfusão ou RM de perfusão para indicar trombectomia endovascular"}
+          ],
+          correct: "b",
+          comment: "Estudos recentes (MR CLEAN, ESCAPE, etc.) demonstraram que a trombectomia endovascular é benéfica em AVCs com oclusão de grandes vasos, quando realizada dentro de 6 horas do início dos sintomas. (Powers WJ, et al. Stroke. 2015.)"
+        },
+        {
+          id: 70,
+          question: "70. Uma mulher de 69 anos com histórico de hipertensão e diabetes apresentou AIT e foi diagnosticada com fibrilação atrial. Ela recusou varfarina, mas deseja iniciar um dos anticoagulantes orais não antagonistas da vitamina K. Sobre esses agentes, qual das seguintes afirmações está correta?",
+          options: [
+            {letter: "a", text: "O dabigatrano é eliminado pelo fígado e não requer ajustes em insuficiência renal"},
+            {letter: "b", text: "O apixabano é um inibidor do fator Xa que demonstrou menor risco de hemorragia intracraniana em comparação ao varfarina"},
+            {letter: "c", text: "O rivaroxabano é um inibidor direto da trombina administrado duas vezes ao dia"},
+            {letter: "d", text: "O dabigatrano tem meia-vida muito curta (<10 horas) e alta biodisponibilidade oral"},
+            {letter: "e", text: "Inibidores diretos da trombina e do fator Xa exigem monitorização rotineira com INR entre 2 e 3"}
+          ],
+          correct: "b",
+          comment: "Anticoagulantes orais não antagonistas da vitamina K (NOACs), como o Apixabano, demonstraram taxas mais baixas de hemorragia intracraniana em comparação à varfarina e não requerem monitoramento rotineiro do INR. (Pollack CV, et al. N Engl J Med. 2015.)"
+        },
+        {
+          id: 71,
+          question: "71. Um homem de 50 anos com histórico de múltiplos AVCs isquêmicos recorrentes faz uma angiografia cerebral que demonstra áreas de estreitamento e dilatação bilateral. Considera-se o diagnóstico de vasculite do SNC. Qual das seguintes afirmações está correta sobre a vasculite do SNC?",
+          options: [
+            {letter: "a", text: "A análise de líquor (LCR) não é necessária e não deve ser feita em todos os casos suspeitos"},
+            {letter: "b", text: "A angiografia cerebral tem alta especificidade e é o padrão-ouro diagnóstico"},
+            {letter: "c", text: "O diagnóstico definitivo requer evidência de inflamação da parede vascular em biópsia cerebral"},
+            {letter: "d", text: "A biópsia cerebral tem alta sensibilidade para essa doença"},
+            {letter: "e", text: "Cefaleia em 'trovoada' é típica da angiite primária do SNC"}
+          ],
+          correct: "c",
+          comment: "O diagnóstico definitivo de angiite primária do SNC (PACNS) requer confirmação histopatológica da inflamação da parede dos vasos por biópsia cerebral. (John S, Hajj-Ali RA. Semin Neurol. 2014.)"
+        },
+        {
+          id: 72,
+          question: "72. Uma mulher de 40 anos teve início súbito de cefaleia intensa, com pico em segundos, melhorando em algumas horas. Apresentou náuseas e vômitos, mas nenhum outro déficit neurológico. Relatou uso de anfetaminas. A TC mostrou discreta HSA cortical. A angiografia revelou 'aspecto de rosário' em ramos de ACM, ACA e ACP bilateralmente, sem aneurismas ou malformações. O LCR é normal. Três meses depois, ela está bem. Qual das seguintes afirmações está correta sobre essa condição?",
+          options: [
+            {letter: "a", text: "Os achados na angiografia cerebral se normalizam em até 12 semanas"},
+            {letter: "b", text: "Biópsia cerebral está indicada em todos os casos, demonstrando inflamação da parede vascular"},
+            {letter: "c", text: "É sempre benigna, não se associando a AVC ou hemorragia intraparenquimatosa"},
+            {letter: "d", text: "É mais comum em homens do que em mulheres"},
+            {letter: "e", text: "Corticoides são recomendados e melhoram o desfecho"}
+          ],
+          correct: "a",
+          comment: "Esta paciente apresenta síndrome de vasoconstrição cerebral reversível (RCVS), cujos achados angiográficos (padrão em 'contas de rosário') normalmente se resolvem em até 12 semanas. (Ducros A. Lancet Neurol. 2012;11:906–917.)"
+        },
+        {
+          id: 73,
+          question: "73. Qual das seguintes afirmações está correta em relação às terapias de revascularização para estenose carotídea?",
+          options: [
+            {letter: "a", text: "A taxa de AVC a longo prazo é significativamente menor após o stent carotídeo comparado à endarterectomia (CEA)"},
+            {letter: "b", text: "A endarterectomia é o tratamento de escolha em pacientes com estenose carotídea que já passaram por cirurgia e radioterapia de pescoço"},
+            {letter: "c", text: "O risco de AVC periprocedimento é menor com stent carotídeo do que com endarterectomia"},
+            {letter: "d", text: "A endarterectomia é o tratamento de escolha em pacientes com estenose carotídea e oclusão contralateral da carótida"},
+            {letter: "e", text: "A colocação de stent carotídeo está associada a menores taxas de infarto do miocárdio em comparação à endarterectomia"}
+          ],
+          correct: "e",
+          comment: "Em pacientes de alto risco, a angioplastia e stent carotídeo (CAS) podem apresentar taxas mais baixas de infarto do miocárdio em comparação à endarterectomia carotídea (CEA); contudo, os desfechos na prevenção do AVC são semelhantes. (Brott TG, et al. 2011; CREST trial.)"
         }
-      } else {
-        // Sem repetição: embaralha o array e seleciona os primeiros numQuestions
-        const shuffled = questionBank.slice().sort(() => 0.5 - Math.random());
-        sessionQuestions = shuffled.slice(0, numQuestions);
-      }
+      ];
       
-      currentQuestionIndex = 0;
-      document.getElementById('settings').style.display = 'none';
-      document.getElementById('quizContainer').style.display = 'block';
-      displayQuestion();
-    }
-    
-    /*****************************************************************
-     * Função para exibir a questão atual
-     *****************************************************************/
-    function displayQuestion() {
-      const questionArea = document.getElementById('questionArea');
-      const currentQuestion = sessionQuestions[currentQuestionIndex];
-      questionArea.innerHTML = "";  // Limpa a área
+      /*****************************************************************
+       * Variáveis de controle da sessão
+       *****************************************************************/
+      let sessionQuestions = []; // Questões selecionadas para a sessão
+      let currentQuestionIndex = 0;
+      let sessionConfig = {}; // Armazena a configuração atual (número e repetição)
       
-      // Cria o cartão da questão
-      const questionDiv = document.createElement('div');
-      questionDiv.className = 'question-card';
+      /*****************************************************************
+       * Função para iniciar a sessão conforme as configurações escolhidas
+       *****************************************************************/
+      const startSession = () => {
+        const numQuestions = parseInt(document.getElementById('numQuestions').value);
+        const repeat = document.getElementById('repeat').checked;
+        sessionConfig = { numQuestions, repeat };
+        sessionQuestions = [];
+        
+        if (repeat) {
+          // Seleciona aleatoriamente com reposição
+          for (let i = 0; i < numQuestions; i++) {
+            const randomIndex = Math.floor(Math.random() * questionBank.length);
+            sessionQuestions.push(questionBank[randomIndex]);
+          }
+        } else {
+          // Sem repetição: embaralha o array e seleciona os primeiros numQuestions
+          const shuffled = questionBank.slice().sort(() => 0.5 - Math.random());
+          sessionQuestions = shuffled.slice(0, numQuestions);
+        }
+        
+        currentQuestionIndex = 0;
+        document.getElementById('settings').style.display = 'none';
+        document.getElementById('quizContainer').style.display = 'block';
+        displayQuestion();
+      };
       
-      // Exibe o enunciado
-      questionDiv.innerHTML = `<h3>${currentQuestion.question}</h3>`;
+      /*****************************************************************
+       * Função para resetar as questões mantendo a configuração atual
+       *****************************************************************/
+      const resetQuestions = () => {
+        const { numQuestions, repeat } = sessionConfig;
+        sessionQuestions = [];
+        if (repeat) {
+          for (let i = 0; i < numQuestions; i++) {
+            const randomIndex = Math.floor(Math.random() * questionBank.length);
+            sessionQuestions.push(questionBank[randomIndex]);
+          }
+        } else {
+          const shuffled = questionBank.slice().sort(() => 0.5 - Math.random());
+          sessionQuestions = shuffled.slice(0, numQuestions);
+        }
+        currentQuestionIndex = 0;
+        displayQuestion();
+      };
       
-      // Cria a lista de alternativas
-      const ul = document.createElement('ul');
-      ul.className = 'options';
-      currentQuestion.options.forEach(option => {
-        const li = document.createElement('li');
-        li.className = 'option';
-        li.textContent = `${option.letter}) ${option.text}`;
-        li.dataset.letter = option.letter;
-        li.addEventListener('click', () => selectOption(li, currentQuestion, questionDiv));
-        ul.appendChild(li);
+      /*****************************************************************
+       * Função para exibir a questão atual
+       *****************************************************************/
+      const displayQuestion = () => {
+        const questionArea = document.getElementById('questionArea');
+        const currentQuestion = sessionQuestions[currentQuestionIndex];
+        questionArea.innerHTML = "";  // Limpa a área
+        
+        // Cria o cartão da questão
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question-card';
+        
+        // Exibe o enunciado (mantendo as tags <strong> para termos importantes)
+        questionDiv.innerHTML = `<h3>${currentQuestion.question}</h3>`;
+        
+        // Cria a lista de alternativas
+        const ul = document.createElement('ul');
+        ul.className = 'options';
+        currentQuestion.options.forEach(option => {
+          const li = document.createElement('li');
+          li.className = 'option';
+          li.textContent = `${option.letter}) ${option.text}`;
+          li.dataset.letter = option.letter;
+          li.addEventListener('click', () => selectOption(li, currentQuestion, questionDiv));
+          ul.appendChild(li);
+        });
+        questionDiv.appendChild(ul);
+        
+        // Área de comentário (inicialmente oculta)
+        const commentDiv = document.createElement('div');
+        commentDiv.className = 'comment';
+        commentDiv.innerHTML = currentQuestion.comment;
+        questionDiv.appendChild(commentDiv);
+        
+        questionArea.appendChild(questionDiv);
+        updateNavigationButtons();
+      };
+      
+      /*****************************************************************
+       * Função para tratar a seleção de uma alternativa
+       *****************************************************************/
+      const selectOption = (selectedLi, question, questionDiv) => {
+        // Se já foi respondida, não permite nova seleção
+        if (questionDiv.classList.contains('answered')) return;
+        
+        const optionItems = questionDiv.querySelectorAll('.option');
+        optionItems.forEach(li => {
+          if (li.dataset.letter === question.correct) {
+            li.classList.add('correct');
+          } else {
+            li.classList.add('faded');
+          }
+          li.style.pointerEvents = 'none';  // Desabilita cliques após a resposta
+        });
+        
+        // Exibe o comentário
+        const commentDiv = questionDiv.querySelector('.comment');
+        if (commentDiv) {
+          commentDiv.style.display = 'block';
+        }
+        
+        questionDiv.classList.add('answered');
+      };
+      
+      /*****************************************************************
+       * Função para atualizar os botões de navegação
+       *****************************************************************/
+      const updateNavigationButtons = () => {
+        document.getElementById('prevQuestion').disabled = (currentQuestionIndex === 0);
+        document.getElementById('nextQuestion').disabled = (currentQuestionIndex === sessionQuestions.length - 1);
+      };
+      
+      /*****************************************************************
+       * Eventos dos botões
+       *****************************************************************/
+      document.getElementById('startSession').addEventListener('click', startSession);
+      
+      document.getElementById('prevQuestion').addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          displayQuestion();
+        }
       });
-      questionDiv.appendChild(ul);
+      
+      document.getElementById('nextQuestion').addEventListener('click', () => {
+        if (currentQuestionIndex < sessionQuestions.length - 1) {
+          currentQuestionIndex++;
+          displayQuestion();
+        }
+      });
+      
+      document.getElementById('resetSession').addEventListener('click', () => {
+        // Reinicia a sessão e retorna à tela de configurações
+        sessionQuestions = [];
+        currentQuestionIndex = 0;
+        document.getElementById('quizContainer').style.display = 'none';
+        document.getElementById('settings').style.display = 'block';
+      });
+      
+      // Botão para voltar à página inicial durante o teste
+      document.getElementById('home').addEventListener('click', () => {
+        sessionQuestions = [];
+        currentQuestionIndex = 0;
+        document.getElementById('quizContainer').style.display = 'none';
+        document.getElementById('settings').style.display = 'block';
+      });
+      
+      // Botão para resetar as questões mantendo a configuração atual
+      document.getElementById('resetQuestions').addEventListener('click', resetQuestions);
+    });
+  </script>
+</body>
+</html>
+
       
       // Área de comentário (inicialmente oculta)
       const commentDiv = document.createElement('div');
